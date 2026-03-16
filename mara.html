@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mara — Writer & Creative</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Mulish:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #f8f5f0;
+  --bg2:    #f0ebe2;
+  --ink:    #1a1612;
+  --mid:    #8a8070;
+  --light:  #c8bfb0;
+  --rose:   #c4826a;
+  --sage:   #7a9980;
+  --sky:    #7a9ab5;
+  --border: rgba(26,22,18,0.08);
+  --border2:rgba(26,22,18,0.14);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Mulish', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* custom cursor */
+.cur {
+  position: fixed; z-index: 99999; pointer-events: none;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ink);
+  transform: translate(-50%,-50%);
+  transition: transform 0.15s, width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: multiply;
+}
+.cur-ring {
+  position: fixed; z-index: 99998; pointer-events: none;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid rgba(26,22,18,0.2);
+  transform: translate(-50%,-50%);
+  mix-blend-mode: multiply;
+}
+
+/* ── CANVAS ── */
+#threeCanvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.5rem 3rem;
+  transition: background 0.4s;
+}
+nav.solid {
+  background: rgba(248,245,240,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem; font-weight: 300;
+  letter-spacing: 0.06em; color: var(--ink);
+  text-decoration: none; font-style: italic;
+}
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.68rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-hire {
+  font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.1rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-hire:hover { color: var(--rose); border-color: var(--rose); }
+
+/* ── SECTIONS ── */
+section { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 4rem;
+}
+.hero-kicker {
+  font-size: 0.62rem; letter-spacing: 0.24em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 2rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  justify-content: center;
+  animation: fadeUp 0.6s 0.1s both;
+}
+.hero-kicker::before, .hero-kicker::after {
+  content: ''; display: block;
+  width: 24px; height: 1px; background: var(--rose);
+}
+.hero-name {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(4rem, 11vw, 10rem);
+  font-weight: 300; line-height: 0.92;
+  letter-spacing: -0.02em; color: var(--ink);
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.7s 0.2s both;
+}
+.hero-name em { font-style: italic; color: var(--rose); }
+.hero-desc {
+  font-size: 0.9rem; font-weight: 300;
+  line-height: 1.85; color: var(--mid);
+  max-width: 440px; margin: 0 auto 3rem;
+  letter-spacing: 0.02em;
+  animation: fadeUp 0.6s 0.35s both;
+}
+.hero-actions {
+  display: flex; gap: 1.25rem; justify-content: center;
+  align-items: center;
+  animation: fadeUp 0.6s 0.5s both;
+}
+.btn-fill {
+  font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--bg); background: var(--ink);
+  padding: 0.85rem 2.25rem; text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-fill:hover { background: var(--rose); }
+.btn-line {
+  font-size: 0.68rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none;
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 0.1rem; transition: color 0.2s, border-color 0.2s;
+}
+.btn-line:hover { color: var(--ink); border-color: var(--ink); }
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--light); animation: bounce 2s ease-in-out infinite;
+}
+.hero-scroll::after {
+  content: ''; width: 1px; height: 32px;
+  background: linear-gradient(to bottom, var(--light), transparent);
+}
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+
+/* ── ABOUT ── */
+#about {
+  padding: 8rem 3rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6rem; align-items: center;
+  background: var(--bg);
+}
+.about-img {
+  position: relative; aspect-ratio: 3/4;
+}
+.about-img-frame {
+  width: 100%; height: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.about-img-frame::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--rose), transparent);
+}
+.about-offset {
+  position: absolute; top: 16px; left: 16px; right: -16px; bottom: -16px;
+  border: 1px solid var(--border); z-index: -1;
+}
+.about-portrait-placeholder {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.75rem;
+}
+.about-portrait-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+}
+.about-portrait-hint {
+  font-size: 0.6rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light);
+}
+
+.about-text {}
+.about-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.about-eyebrow::before { content:''; width:16px; height:1px; background:var(--rose); }
+.about-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300; line-height: 1.1;
+  margin-bottom: 1.5rem; letter-spacing: -0.01em;
+}
+.about-heading em { font-style: italic; color: var(--rose); }
+.about-body {
+  font-size: 0.8rem; font-weight: 300;
+  line-height: 1.95; color: var(--mid);
+  margin-bottom: 2rem; letter-spacing: 0.02em;
+}
+.about-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+.about-tag {
+  font-size: 0.6rem; font-weight: 400;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink); border: 1px solid var(--border2);
+  padding: 0.35rem 0.85rem; transition: all 0.2s;
+}
+.about-tag:hover { border-color: var(--rose); color: var(--rose); }
+.about-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.stat-n {
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem; font-weight: 300;
+  color: var(--rose); line-height: 1; margin-bottom: 0.2rem;
+}
+.stat-l {
+  font-size: 0.58rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--mid);
+}
+
+/* ── FEATURED POST ── */
+#featured {
+  padding: 0 3rem 8rem;
+  background: var(--bg);
+}
+.featured-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.featured-eyebrow::before { content:''; width:16px; height:1px; background:var(--rose); }
+.featured-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300; margin-bottom: 3rem;
+  letter-spacing: -0.01em;
+}
+.featured-heading em { font-style: italic; }
+
+.featured-card {
+  display: grid; grid-template-columns: 1.2fr 1fr;
+  border: 1px solid var(--border);
+  overflow: hidden; transition: border-color 0.25s;
+  cursor: pointer;
+}
+.featured-card:hover { border-color: var(--border2); }
+.featured-card:hover .fc-img { transform: scale(1.03); }
+.fc-img-wrap {
+  overflow: hidden; background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 380px;
+}
+.fc-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.5s ease;
+}
+.fc-body {
+  padding: 3rem 2.5rem;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border-left: 1px solid var(--border);
+}
+.fc-tag {
+  font-size: 0.58rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 1rem;
+}
+.fc-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 300; line-height: 1.2;
+  margin-bottom: 1rem; letter-spacing: -0.01em;
+}
+.fc-title em { font-style: italic; }
+.fc-excerpt {
+  font-size: 0.75rem; font-weight: 300;
+  line-height: 1.85; color: var(--mid);
+  margin-bottom: 2rem; letter-spacing: 0.02em;
+  flex: 1;
+}
+.fc-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 1.5rem; border-top: 1px solid var(--border);
+}
+.fc-date {
+  font-size: 0.62rem; letter-spacing: 0.1em; color: var(--light);
+}
+.fc-read {
+  font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: color 0.2s, gap 0.2s;
+}
+.featured-card:hover .fc-read { color: var(--rose); gap: 0.7rem; }
+
+/* ── POSTS GRID ── */
+#posts {
+  padding: 0 3rem 8rem;
+  background: var(--bg);
+}
+.posts-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  margin-bottom: 3rem;
+}
+.posts-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300; letter-spacing: -0.01em;
+}
+.posts-heading em { font-style: italic; }
+.posts-all {
+  font-size: 0.62rem; font-weight: 400;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none;
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 0.1rem; transition: color 0.2s, border-color 0.2s;
+}
+.posts-all:hover { color: var(--ink); border-color: var(--ink); }
+
+.posts-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+.post-card {
+  cursor: pointer;
+}
+.post-card:hover .pc-img { transform: scale(1.04); }
+.post-card:hover .pc-title { color: var(--rose); }
+.pc-img-wrap {
+  aspect-ratio: 4/3; overflow: hidden;
+  background: var(--bg2); margin-bottom: 1.25rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.pc-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.4s ease;
+}
+.pc-tag {
+  font-size: 0.56rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 0.5rem;
+}
+.pc-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem; font-weight: 300;
+  line-height: 1.3; margin-bottom: 0.6rem;
+  letter-spacing: -0.01em; transition: color 0.2s;
+}
+.pc-title em { font-style: italic; }
+.pc-excerpt {
+  font-size: 0.7rem; font-weight: 300;
+  line-height: 1.75; color: var(--mid);
+  letter-spacing: 0.02em; margin-bottom: 0.75rem;
+}
+.pc-date {
+  font-size: 0.58rem; letter-spacing: 0.1em; color: var(--light);
+}
+
+/* ── TOPICS ── */
+#topics {
+  padding: 5rem 3rem;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.topics-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.topics-eyebrow::before { content:''; width:16px; height:1px; background:var(--rose); }
+.topics-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300; margin-bottom: 2.5rem;
+  letter-spacing: -0.01em;
+}
+.topics-heading em { font-style: italic; }
+.topics-list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.topic-pill {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem; font-weight: 300; font-style: italic;
+  color: var(--ink); border: 1px solid var(--border2);
+  padding: 0.5rem 1.5rem; background: var(--bg);
+  transition: all 0.2s; cursor: pointer; letter-spacing: 0.01em;
+}
+.topic-pill:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ── NEWSLETTER ── */
+#newsletter {
+  padding: 7rem 3rem;
+  background: var(--ink); color: var(--bg);
+  text-align: center; position: relative; overflow: hidden;
+}
+#newsletter::before {
+  content: 'Write';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-family: 'Fraunces', serif;
+  font-size: clamp(80px, 18vw, 200px);
+  font-weight: 300; font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(248,245,240,0.04);
+  pointer-events: none; white-space: nowrap;
+}
+.nl-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rose);
+  margin-bottom: 1rem; position: relative;
+  display: flex; align-items: center; gap: 0.75rem; justify-content: center;
+}
+.nl-eyebrow::before, .nl-eyebrow::after {
+  content:''; width:16px; height:1px; background:var(--rose);
+}
+.nl-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 300; font-style: italic;
+  line-height: 1.1; margin-bottom: 1rem;
+  color: var(--bg); position: relative;
+}
+.nl-sub {
+  font-size: 0.78rem; font-weight: 300;
+  color: rgba(248,245,240,0.45); margin-bottom: 2.5rem;
+  letter-spacing: 0.03em; position: relative;
+}
+.nl-form {
+  display: flex; max-width: 460px; margin: 0 auto;
+  border: 1px solid rgba(248,245,240,0.15);
+  position: relative;
+}
+.nl-form input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--bg); font-family: 'Mulish', sans-serif;
+  font-size: 0.78rem; font-weight: 300;
+  padding: 0.9rem 1.25rem; letter-spacing: 0.04em;
+}
+.nl-form input::placeholder { color: rgba(248,245,240,0.25); }
+.nl-form button {
+  background: var(--rose); border: none; cursor: pointer;
+  font-family: 'Mulish', sans-serif;
+  font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--bg); padding: 0.9rem 1.5rem;
+  transition: opacity 0.2s;
+}
+.nl-form button:hover { opacity: 0.85; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink); color: rgba(248,245,240,0.35);
+  padding: 2rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(248,245,240,0.06);
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem; font-weight: 300; font-style: italic;
+  color: var(--bg); text-decoration: none; letter-spacing: 0.04em;
+}
+footer nav { display: flex; gap: 2rem; background: none; border: none; position: static; padding: 0; }
+footer nav a {
+  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(248,245,240,0.35); text-decoration: none; transition: color 0.2s;
+}
+footer nav a:hover { color: var(--bg); }
+.footer-copy { font-size: 0.58rem; letter-spacing: 0.1em; }
+
+/* ── SCROLL FADE IN ── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+
+@media(max-width:860px){
+  nav{padding:1.2rem 1.5rem;}
+  .nav-links{display:none;}
+  #about{grid-template-columns:1fr;gap:3rem;padding:5rem 1.5rem;}
+  .about-img{max-height:320px;}
+  #featured,#posts{padding-left:1.5rem;padding-right:1.5rem;padding-bottom:5rem;}
+  .featured-card{grid-template-columns:1fr;}
+  .fc-body{border-left:none;border-top:1px solid var(--border);}
+  .posts-grid{grid-template-columns:1fr;}
+  #topics,#newsletter{padding:5rem 1.5rem;}
+  footer{flex-direction:column;text-align:center;padding:2rem 1.5rem;}
+  footer nav{flex-wrap:wrap;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+<canvas id="threeCanvas"></canvas>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Mara.</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#posts">Writing</a></li>
+    <li><a href="#topics">Topics</a></li>
+    <li><a href="#newsletter">Newsletter</a></li>
+  </ul>
+  <a href="mailto:hello@mara.studio" class="nav-hire">Work with me</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-kicker">Writer & Creative Director</p>
+  <h1 class="hero-name">
+    Words that<br><em>move</em> people.
+  </h1>
+  <p class="hero-desc">I'm Mara — I write about design, creativity, and the quiet things that make life feel more like itself. Essays, brand stories, and the occasional love letter to good typography.</p>
+  <div class="hero-actions">
+    <a href="#posts" class="btn-fill">Read the blog</a>
+    <a href="#about" class="btn-line">About me →</a>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-img reveal">
+    <div class="about-img-frame">
+      <div class="about-portrait-placeholder">
+        <div class="about-portrait-icon">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+            <circle cx="13" cy="9" r="4.5" stroke="rgba(26,22,18,0.25)" stroke-width="1.2"/>
+            <path d="M3 25c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="rgba(26,22,18,0.25)" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="about-portrait-hint">Your photo</span>
+      </div>
+    </div>
+    <div class="about-offset"></div>
+  </div>
+  <div class="reveal">
+    <p class="about-eyebrow">Who I am</p>
+    <h2 class="about-heading">Writing at the<br>edge of <em>feeling.</em></h2>
+    <p class="about-body">I've spent the last decade writing for brands, publications, and the odd napkin at 2am. I believe the best writing doesn't just communicate — it makes you feel something you didn't know you needed to feel.<br><br>Currently: based in Melbourne, drinking too much tea, working on a book about slow living in fast places.</p>
+    <div class="about-tags">
+      <span class="about-tag">Brand Writing</span>
+      <span class="about-tag">Essays</span>
+      <span class="about-tag">Content Strategy</span>
+      <span class="about-tag">Art Direction</span>
+      <span class="about-tag">Editing</span>
+    </div>
+    <div class="about-stats">
+      <div><p class="stat-n">120+</p><p class="stat-l">Essays written</p></div>
+      <div><p class="stat-n">8k</p><p class="stat-l">Subscribers</p></div>
+      <div><p class="stat-n">10</p><p class="stat-l">Years writing</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section id="featured">
+  <p class="featured-eyebrow reveal">Featured</p>
+  <h2 class="featured-heading reveal">Latest <em>essay</em></h2>
+  <div class="featured-card reveal">
+    <div class="fc-img-wrap">
+      <div class="fc-img">
+        <svg width="180" height="140" viewBox="0 0 180 140" fill="none">
+          <rect x="20" y="20" width="140" height="100" rx="2" fill="rgba(26,22,18,0.04)" stroke="rgba(26,22,18,0.06)" stroke-width="1"/>
+          <rect x="32" y="36" width="80" height="3" rx="1" fill="rgba(26,22,18,0.15)"/>
+          <rect x="32" y="44" width="60" height="2" rx="1" fill="rgba(26,22,18,0.08)"/>
+          <rect x="32" y="56" width="116" height="2" rx="1" fill="rgba(26,22,18,0.06)"/>
+          <rect x="32" y="62" width="100" height="2" rx="1" fill="rgba(26,22,18,0.06)"/>
+          <rect x="32" y="68" width="110" height="2" rx="1" fill="rgba(26,22,18,0.06)"/>
+          <rect x="32" y="74" width="90" height="2" rx="1" fill="rgba(26,22,18,0.06)"/>
+          <rect x="32" y="86" width="116" height="2" rx="1" fill="rgba(26,22,18,0.04)"/>
+          <rect x="32" y="92" width="70" height="2" rx="1" fill="rgba(26,22,18,0.04)"/>
+          <circle cx="140" cy="36" r="14" fill="rgba(196,130,106,0.12)" stroke="rgba(196,130,106,0.2)" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+    <div class="fc-body">
+      <div>
+        <p class="fc-tag">Essay · Design</p>
+        <h3 class="fc-title">On the quiet luxury of <em>empty space</em></h3>
+        <p class="fc-excerpt">We live in a world that mistakes fullness for richness. But the most generous thing a designer — or a writer, or a room — can do is leave room for the reader to breathe. This is about whitespace, and everything it says when it says nothing.</p>
+      </div>
+      <div class="fc-meta">
+        <span class="fc-date">March 10, 2026 · 8 min read</span>
+        <a href="#" class="fc-read">Read essay →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSTS -->
+<section id="posts">
+  <div class="posts-header reveal">
+    <h2 class="posts-heading">Recent <em>writing</em></h2>
+    <a href="#" class="posts-all">All posts →</a>
+  </div>
+  <div class="posts-grid">
+
+    <div class="post-card reveal">
+      <div class="pc-img-wrap">
+        <div class="pc-img">
+          <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+            <rect x="10" y="10" width="80" height="60" rx="2" fill="rgba(122,153,128,0.1)" stroke="rgba(122,153,128,0.15)" stroke-width="1"/>
+            <rect x="20" y="22" width="50" height="3" rx="1" fill="rgba(122,153,128,0.3)"/>
+            <rect x="20" y="30" width="38" height="2" rx="1" fill="rgba(122,153,128,0.15)"/>
+            <rect x="20" y="42" width="60" height="2" rx="1" fill="rgba(122,153,128,0.1)"/>
+            <rect x="20" y="48" width="50" height="2" rx="1" fill="rgba(122,153,128,0.1)"/>
+            <circle cx="72" cy="58" r="8" fill="rgba(122,153,128,0.12)" stroke="rgba(122,153,128,0.2)" stroke-width="1"/>
+          </svg>
+        </div>
+      </div>
+      <p class="pc-tag">Creativity</p>
+      <h3 class="pc-title">The strange freedom of <em>finishing</em></h3>
+      <p class="pc-excerpt">What happens to a creative person when they actually complete something. A meditation on endings and what they open up.</p>
+      <p class="pc-date">Feb 28, 2026 · 5 min</p>
+    </div>
+
+    <div class="post-card reveal">
+      <div class="pc-img-wrap">
+        <div class="pc-img">
+          <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+            <rect x="10" y="10" width="80" height="60" rx="2" fill="rgba(122,154,181,0.1)" stroke="rgba(122,154,181,0.15)" stroke-width="1"/>
+            <rect x="20" y="22" width="45" height="3" rx="1" fill="rgba(122,154,181,0.3)"/>
+            <rect x="20" y="30" width="35" height="2" rx="1" fill="rgba(122,154,181,0.15)"/>
+            <rect x="20" y="42" width="60" height="2" rx="1" fill="rgba(122,154,181,0.1)"/>
+            <rect x="20" y="48" width="44" height="2" rx="1" fill="rgba(122,154,181,0.1)"/>
+            <rect x="20" y="54" width="52" height="2" rx="1" fill="rgba(122,154,181,0.1)"/>
+          </svg>
+        </div>
+      </div>
+      <p class="pc-tag">Design</p>
+      <h3 class="pc-title">Typography is a <em>feeling</em>, not a tool</h3>
+      <p class="pc-excerpt">The fonts we choose carry emotional weight most people never consciously notice. But they feel it. Every time.</p>
+      <p class="pc-date">Feb 14, 2026 · 6 min</p>
+    </div>
+
+    <div class="post-card reveal">
+      <div class="pc-img-wrap">
+        <div class="pc-img">
+          <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+            <rect x="10" y="10" width="80" height="60" rx="2" fill="rgba(196,130,106,0.08)" stroke="rgba(196,130,106,0.12)" stroke-width="1"/>
+            <rect x="20" y="22" width="55" height="3" rx="1" fill="rgba(196,130,106,0.25)"/>
+            <rect x="20" y="30" width="40" height="2" rx="1" fill="rgba(196,130,106,0.12)"/>
+            <rect x="20" y="42" width="60" height="2" rx="1" fill="rgba(196,130,106,0.08)"/>
+            <rect x="20" y="48" width="48" height="2" rx="1" fill="rgba(196,130,106,0.08)"/>
+            <path d="M60 58 Q70 52 80 58 Q70 64 60 58Z" fill="rgba(196,130,106,0.15)"/>
+          </svg>
+        </div>
+      </div>
+      <p class="pc-tag">Life & Work</p>
+      <h3 class="pc-title">Slow living <em>isn't</em> a luxury</h3>
+      <p class="pc-excerpt">On reclaiming pace in a culture that equates speed with value. And why the most creative people I know move slowly.</p>
+      <p class="pc-date">Jan 31, 2026 · 7 min</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- TOPICS -->
+<section id="topics">
+  <p class="topics-eyebrow reveal">Browse by topic</p>
+  <h2 class="topics-heading reveal">What I write <em>about</em></h2>
+  <div class="topics-list reveal">
+    <span class="topic-pill">Design</span>
+    <span class="topic-pill">Creativity</span>
+    <span class="topic-pill">Slow Living</span>
+    <span class="topic-pill">Typography</span>
+    <span class="topic-pill">Brand Storytelling</span>
+    <span class="topic-pill">Books</span>
+    <span class="topic-pill">Travel</span>
+    <span class="topic-pill">Making Things</span>
+    <span class="topic-pill">Photography</span>
+    <span class="topic-pill">Cities</span>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <p class="nl-eyebrow">Stay in touch</p>
+  <h2 class="nl-heading">Words in your inbox,<br>when they're ready.</h2>
+  <p class="nl-sub">No schedule. No noise. Just essays when they're worth reading — about once a fortnight.</p>
+  <form class="nl-form" onsubmit="return false;">
+    <input type="email" placeholder="your@email.com">
+    <button type="submit">Subscribe</button>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Mara.</a>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#posts">Writing</a>
+    <a href="#topics">Topics</a>
+    <a href="#newsletter">Newsletter</a>
+  </nav>
+  <span class="footer-copy">© 2026 Mara — All rights reserved</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ── CURSOR ── */
+const cur = document.getElementById('cur');
+const curRing = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
+  curRing.style.left=rx+'px'; curRing.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ── NAV ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('solid', window.scrollY>60);
+});
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+/* ── THREE.JS 3D SCROLL SCENE ── */
+const canvas = document.getElementById('threeCanvas');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(0, 0, 5);
+
+/* lighting */
+const ambLight = new THREE.AmbientLight(0xfaf5f0, 0.6);
+scene.add(ambLight);
+const dirLight = new THREE.DirectionalLight(0xfff0e8, 1.2);
+dirLight.position.set(2, 4, 3);
+scene.add(dirLight);
+const roseLight = new THREE.PointLight(0xc4826a, 0.8, 20);
+roseLight.position.set(-3, 2, 2);
+scene.add(roseLight);
+const sageLight = new THREE.PointLight(0x7a9980, 0.5, 20);
+sageLight.position.set(3, -2, 1);
+scene.add(sageLight);
+
+/* materials */
+const matCream = new THREE.MeshStandardMaterial({ color: 0xf0ebe2, roughness: 0.4, metalness: 0.0 });
+const matRose  = new THREE.MeshStandardMaterial({ color: 0xc4826a, roughness: 0.3, metalness: 0.1 });
+const matSage  = new THREE.MeshStandardMaterial({ color: 0x7a9980, roughness: 0.5, metalness: 0.0 });
+const matSky   = new THREE.MeshStandardMaterial({ color: 0x7a9ab5, roughness: 0.35, metalness: 0.05 });
+const matWire  = new THREE.MeshStandardMaterial({ color: 0xc8bfb0, roughness: 0.8, metalness: 0.0, wireframe: true });
+
+/* objects group — scrolls vertically */
+const group = new THREE.Group();
+scene.add(group);
+
+/* ── shapes scattered in 3D space ── */
+const shapes = [];
+
+function addShape(geo, mat, x, y, z, rx=0, ry=0, rz=0) {
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(x, y, z);
+  mesh.rotation.set(rx, ry, rz);
+  group.add(mesh);
+  shapes.push({ mesh, ox:x, oy:y, oz:z, orx:rx, ory:ry, orz:rz });
+  return mesh;
+}
+
+/* torus knot — hero centrepiece */
+addShape(new THREE.TorusKnotGeometry(0.7, 0.22, 120, 16), matCream, 2.8, 0, -1, 0.3, 0.5, 0);
+
+/* floating spheres */
+addShape(new THREE.SphereGeometry(0.35, 32, 32), matRose,  -3.0,  1.2, -2, 0,0,0);
+addShape(new THREE.SphereGeometry(0.22, 32, 32), matSage,   3.5, -1.5, -3, 0,0,0);
+addShape(new THREE.SphereGeometry(0.18, 32, 32), matSky,   -2.5, -0.8, -1, 0,0,0);
+
+/* icosahedron */
+addShape(new THREE.IcosahedronGeometry(0.45, 0), matRose,  2.5,  2.2, -2, 0.2, 0.4, 0);
+
+/* torus */
+addShape(new THREE.TorusGeometry(0.5, 0.14, 16, 60), matSage, -3.5, -2.0, -2, Math.PI/3, 0.5, 0);
+
+/* octahedron */
+addShape(new THREE.OctahedronGeometry(0.38), matSky, 1.5, -2.5, -1, 0.3, 0.2, 0.1);
+
+/* wireframe dodecahedron */
+addShape(new THREE.DodecahedronGeometry(0.55), matWire, -1.8, 2.8, -3, 0.4, 0.6, 0.2);
+
+/* cone */
+addShape(new THREE.ConeGeometry(0.28, 0.7, 6), matCream, 4.0, 0.5, -2.5, 0, 0, 0.3);
+
+/* box */
+addShape(new THREE.BoxGeometry(0.4, 0.4, 0.4), matRose, -4.2, 1.0, -3, 0.5, 0.8, 0.3);
+
+/* small accent spheres */
+addShape(new THREE.SphereGeometry(0.12, 16, 16), matRose, 0.5, 3.0, -1.5, 0,0,0);
+addShape(new THREE.SphereGeometry(0.1,  16, 16), matSage, -0.8, -3.2, -2, 0,0,0);
+addShape(new THREE.SphereGeometry(0.14, 16, 16), matSky,  3.8, 2.5, -2.5, 0,0,0);
+
+/* ── SCROLL ANIMATION ── */
+let scrollY = 0;
+let targetScrollY = 0;
+window.addEventListener('scroll', ()=>{ targetScrollY = window.scrollY; });
+
+/* ── MOUSE PARALLAX ── */
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', e=>{
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+/* resize */
+window.addEventListener('resize',()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* ── ANIMATE ── */
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  /* smooth scroll */
+  scrollY += (targetScrollY - scrollY) * 0.08;
+
+  /* scroll moves group up */
+  const scrollProgress = scrollY / (document.body.scrollHeight - window.innerHeight);
+  group.position.y = scrollY * 0.003;
+
+  /* gentle mouse parallax on whole group */
+  group.rotation.y = mouseX * 0.08;
+  group.rotation.x = -mouseY * 0.04;
+
+  /* individual shape animations */
+  shapes.forEach((s, i) => {
+    const m = s.mesh;
+    const speed = 0.3 + i * 0.07;
+    const offset = i * 1.3;
+    /* float */
+    m.position.y = s.oy + Math.sin(t * speed + offset) * 0.18;
+    m.position.x = s.ox + Math.cos(t * speed * 0.7 + offset) * 0.06;
+    /* rotate */
+    m.rotation.x = s.orx + t * (0.15 + i * 0.02);
+    m.rotation.y = s.ory + t * (0.2  + i * 0.03);
+    m.rotation.z = s.orz + t * (0.1  + i * 0.015);
+  });
+
+  /* subtle camera drift */
+  camera.position.x = Math.sin(t * 0.1) * 0.15 + mouseX * 0.3;
+  camera.position.y = Math.cos(t * 0.08) * 0.08 - mouseY * 0.2;
+  camera.lookAt(0, group.position.y, 0);
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

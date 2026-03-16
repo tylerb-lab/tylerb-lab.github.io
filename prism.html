@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prism AI — Think Faster</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #070810;
+  --bg2:     #0d0f1a;
+  --purple:  #7c5cfc;
+  --blue:    #4fa3ff;
+  --cyan:    #00d4ff;
+  --pink:    #ff5caa;
+  --white:   #f0f0ff;
+  --mid:     #7a7a9a;
+  --glass:   rgba(255,255,255,0.04);
+  --glass2:  rgba(255,255,255,0.07);
+  --glow-p:  rgba(124,92,252,0.3);
+  --glow-b:  rgba(79,163,255,0.25);
+  --glow-c:  rgba(0,212,255,0.2);
+  --border:  rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+.cur {
+  position: fixed; z-index: 99999; pointer-events: none;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cyan);
+  transform: translate(-50%,-50%);
+  mix-blend-mode: screen;
+  box-shadow: 0 0 12px var(--cyan);
+  transition: width 0.25s, height 0.25s;
+}
+.cur.big { width: 50px; height: 50px; opacity: 0.4; }
+.cur-ring {
+  position: fixed; z-index: 99998; pointer-events: none;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.3);
+  transform: translate(-50%,-50%);
+}
+
+/* ── BACKGROUND GRADIENTS ── */
+.bg-glow {
+  position: fixed; pointer-events: none; border-radius: 50%;
+  filter: blur(80px); opacity: 0.5; z-index: 0;
+}
+.bg-glow-1 {
+  width: 600px; height: 600px;
+  background: var(--purple); opacity: 0.12;
+  top: -200px; right: -100px;
+  animation: driftA 18s ease-in-out infinite;
+}
+.bg-glow-2 {
+  width: 500px; height: 500px;
+  background: var(--blue); opacity: 0.08;
+  bottom: 10%; left: -100px;
+  animation: driftB 22s ease-in-out infinite;
+}
+.bg-glow-3 {
+  width: 400px; height: 400px;
+  background: var(--cyan); opacity: 0.06;
+  top: 50%; right: 20%;
+  animation: driftA 26s ease-in-out infinite reverse;
+}
+@keyframes driftA { 0%,100%{transform:translate(0,0)} 33%{transform:translate(40px,-30px)} 66%{transform:translate(-20px,40px)} }
+@keyframes driftB { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,30px)} }
+
+/* grid bg */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 80%);
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 3rem;
+  background: rgba(7,8,16,0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem; font-weight: 800;
+  letter-spacing: -0.01em; color: var(--white);
+  text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.72rem; font-weight: 400;
+  letter-spacing: 0.04em; color: var(--mid);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.04em; color: var(--white);
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  padding: 0.6rem 1.5rem; text-decoration: none; border-radius: 8px;
+  transition: opacity 0.2s; box-shadow: 0 0 20px rgba(124,92,252,0.3);
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 8rem 2rem 5rem;
+  position: relative; z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--glass); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px);
+  padding: 0.4rem 1rem 0.4rem 0.6rem;
+  border-radius: 100px; margin-bottom: 2rem;
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.04em;
+  animation: fadeUp 0.5s 0.1s both;
+}
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.8)} }
+.badge-new {
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  color: var(--white); font-size: 0.55rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.15rem 0.5rem; border-radius: 100px; margin-right: 0.25rem;
+}
+
+.hero-h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  font-weight: 800; line-height: 0.95;
+  letter-spacing: -0.03em; margin-bottom: 1.75rem;
+  animation: fadeUp 0.7s 0.2s both;
+}
+.hero-h1 .grad {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 40%, var(--cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1rem; font-weight: 300;
+  line-height: 1.75; color: var(--mid);
+  max-width: 520px; margin: 0 auto 2.5rem;
+  letter-spacing: 0.01em;
+  animation: fadeUp 0.6s 0.35s both;
+}
+
+.hero-btns {
+  display: flex; gap: 1rem; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 4rem;
+  animation: fadeUp 0.6s 0.5s both;
+}
+.btn-glow {
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.04em; color: var(--white);
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  padding: 0.9rem 2.25rem; text-decoration: none; border-radius: 10px;
+  box-shadow: 0 0 30px rgba(124,92,252,0.4), 0 0 60px rgba(124,92,252,0.15);
+  transition: box-shadow 0.25s, transform 0.15s;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 40px rgba(124,92,252,0.6), 0 0 80px rgba(124,92,252,0.2);
+  transform: translateY(-1px);
+}
+.btn-glass {
+  font-size: 0.78rem; font-weight: 500;
+  letter-spacing: 0.04em; color: var(--white);
+  background: var(--glass2); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px);
+  padding: 0.9rem 2.25rem; text-decoration: none; border-radius: 10px;
+  transition: background 0.2s, border-color 0.2s;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.btn-glass:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+.hero-social-proof {
+  display: flex; align-items: center; gap: 1rem;
+  justify-content: center;
+  animation: fadeUp 0.6s 0.65s both;
+}
+.proof-avatars { display: flex; }
+.proof-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--bg);
+  margin-left: -8px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; font-weight: 600;
+}
+.proof-avatar:first-child { margin-left: 0; }
+.pa1{background:linear-gradient(135deg,#7c5cfc,#4fa3ff);}
+.pa2{background:linear-gradient(135deg,#ff5caa,#7c5cfc);}
+.pa3{background:linear-gradient(135deg,#00d4ff,#4fa3ff);}
+.pa4{background:linear-gradient(135deg,#7c5cfc,#00d4ff);}
+.proof-text { font-size: 0.72rem; color: var(--mid); }
+.proof-text strong { color: var(--white); font-weight: 600; }
+
+/* ── HERO DASHBOARD MOCKUP ── */
+.hero-mockup {
+  position: relative; max-width: 900px; margin: 5rem auto 0;
+  animation: fadeUp 0.8s 0.7s both;
+}
+.mockup-glow {
+  position: absolute; inset: -40px;
+  background: radial-gradient(ellipse at 50% 60%, rgba(124,92,252,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.mockup-window {
+  background: rgba(13,15,26,0.8);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.mockup-bar {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.mbar-dot { width: 10px; height: 10px; border-radius: 50%; }
+.md1{background:#ff5f57;} .md2{background:#febc2e;} .md3{background:#28c840;}
+.mbar-title {
+  flex: 1; text-align: center;
+  font-size: 0.65rem; color: var(--mid); letter-spacing: 0.06em;
+}
+.mockup-body {
+  display: grid; grid-template-columns: 220px 1fr;
+}
+.mockup-sidebar {
+  padding: 1.25rem; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.35rem;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 0.75rem; border-radius: 8px;
+  font-size: 0.7rem; color: var(--mid); transition: all 0.2s;
+  cursor: pointer;
+}
+.sb-item.active { background: var(--glass2); color: var(--white); }
+.sb-item:hover:not(.active) { background: var(--glass); color: var(--white); }
+.sb-icon {
+  width: 16px; height: 16px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem;
+}
+.sb-icon-1{background:rgba(124,92,252,0.3);}
+.sb-icon-2{background:rgba(79,163,255,0.3);}
+.sb-icon-3{background:rgba(0,212,255,0.3);}
+.sb-icon-4{background:rgba(255,92,170,0.3);}
+.sb-icon-5{background:rgba(122,122,154,0.2);}
+
+.mockup-main { padding: 1.5rem; }
+.mm-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem; font-weight: 700; margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+.mm-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+.mm-card {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.85rem;
+}
+.mm-card-label { font-size: 0.6rem; color: var(--mid); margin-bottom: 0.35rem; letter-spacing: 0.06em; }
+.mm-card-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em;
+}
+.mm-card-val.c-purple{color:var(--purple);}
+.mm-card-val.c-blue{color:var(--blue);}
+.mm-card-val.c-cyan{color:var(--cyan);}
+.mm-chart {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem; height: 100px;
+  display: flex; align-items: flex-end; gap: 4px;
+}
+.bar {
+  flex: 1; border-radius: 3px 3px 0 0;
+  transition: height 0.4s ease;
+}
+.b1{background:linear-gradient(to top,var(--purple),rgba(124,92,252,0.3));height:40%;}
+.b2{background:linear-gradient(to top,var(--purple),rgba(124,92,252,0.3));height:65%;}
+.b3{background:linear-gradient(to top,var(--blue),rgba(79,163,255,0.3));height:45%;}
+.b4{background:linear-gradient(to top,var(--blue),rgba(79,163,255,0.3));height:80%;}
+.b5{background:linear-gradient(to top,var(--cyan),rgba(0,212,255,0.3));height:55%;}
+.b6{background:linear-gradient(to top,var(--cyan),rgba(0,212,255,0.3));height:90%;}
+.b7{background:linear-gradient(to top,var(--purple),rgba(124,92,252,0.3));height:70%;}
+.b8{background:linear-gradient(to top,var(--blue),rgba(79,163,255,0.3));height:85%;}
+
+/* ── LOGOS ── */
+#logos {
+  padding: 4rem 3rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative; z-index: 1;
+  text-align: center;
+}
+.logos-label {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--mid); margin-bottom: 2.5rem;
+}
+.logos-row {
+  display: flex; justify-content: center; align-items: center;
+  gap: 3.5rem; flex-wrap: wrap;
+}
+.logo-item {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem; font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(240,240,255,0.15);
+  transition: color 0.25s;
+}
+.logo-item:hover { color: rgba(240,240,255,0.45); }
+
+/* ── FEATURES ── */
+#features {
+  padding: 7rem 3rem;
+  position: relative; z-index: 1;
+}
+.features-header { text-align: center; margin-bottom: 5rem; }
+.sec-tag {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 1rem;
+}
+.sec-tag::before, .sec-tag::after { content:''; display:block; width:20px; height:1px; background:var(--cyan); opacity:0.4; }
+.sec-h {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 800; line-height: 1.0;
+  letter-spacing: -0.03em; margin-bottom: 1rem;
+}
+.sec-h .grad {
+  background: linear-gradient(135deg, var(--white) 0%, var(--mid) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.sec-sub {
+  font-size: 0.85rem; font-weight: 300; color: var(--mid);
+  max-width: 460px; margin: 0 auto; line-height: 1.75; letter-spacing: 0.01em;
+}
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+}
+.feat-card {
+  background: var(--bg2); padding: 2.5rem 2rem;
+  transition: background 0.25s; position: relative; overflow: hidden;
+}
+.feat-card:hover { background: rgba(13,15,26,0.95); }
+.feat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.feat-card:hover::before { opacity: 1; }
+.fc-purple::before{background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.fc-blue::before{background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.fc-cyan::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+.fc-pink::before{background:linear-gradient(90deg,transparent,var(--pink),transparent);}
+
+.feat-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.25rem; font-size: 1.1rem;
+}
+.fi-purple{background:rgba(124,92,252,0.15); border:1px solid rgba(124,92,252,0.25);}
+.fi-blue{background:rgba(79,163,255,0.15); border:1px solid rgba(79,163,255,0.25);}
+.fi-cyan{background:rgba(0,212,255,0.15); border:1px solid rgba(0,212,255,0.25);}
+.fi-pink{background:rgba(255,92,170,0.15); border:1px solid rgba(255,92,170,0.25);}
+.fi-p2{background:rgba(124,92,252,0.1); border:1px solid rgba(124,92,252,0.2);}
+.fi-b2{background:rgba(79,163,255,0.1); border:1px solid rgba(79,163,255,0.2);}
+
+.feat-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  margin-bottom: 0.6rem; letter-spacing: -0.01em;
+}
+.feat-desc {
+  font-size: 0.72rem; font-weight: 300;
+  color: var(--mid); line-height: 1.75; letter-spacing: 0.01em;
+}
+
+/* ── HOW IT WORKS ── */
+#how {
+  padding: 7rem 3rem;
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+}
+.how-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6rem; align-items: center; margin-top: 4rem;
+}
+.how-steps { display: flex; flex-direction: column; gap: 0; }
+.how-step {
+  display: flex; gap: 1.5rem;
+  padding: 2rem 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: opacity 0.2s;
+}
+.how-step:last-child { border-bottom: none; }
+.how-step:hover { opacity: 0.85; }
+.how-step.active .hs-num { color: var(--cyan); border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.08); }
+.how-step.active .hs-title { color: var(--white); }
+.hs-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.8rem; font-weight: 700;
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid var(--border); color: var(--mid);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.25s;
+  letter-spacing: 0.02em;
+}
+.hs-title {
+  font-size: 0.95rem; font-weight: 600;
+  margin-bottom: 0.35rem; color: var(--mid);
+  transition: color 0.25s; letter-spacing: -0.01em;
+}
+.hs-desc {
+  font-size: 0.72rem; font-weight: 300;
+  color: var(--mid); line-height: 1.7; letter-spacing: 0.01em;
+}
+
+.how-visual {
+  position: relative;
+}
+.how-glass-card {
+  background: var(--glass);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative; overflow: hidden;
+}
+.how-glass-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), var(--cyan), transparent);
+}
+.hgc-label {
+  font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--mid); margin-bottom: 1rem;
+}
+.hgc-prompt {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.85rem 1rem;
+  font-size: 0.78rem; color: var(--white);
+  line-height: 1.6; margin-bottom: 1rem;
+  position: relative;
+}
+.hgc-prompt::after {
+  content: '|';
+  color: var(--cyan); animation: blink 1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hgc-response {
+  background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(0,212,255,0.06));
+  border: 1px solid rgba(124,92,252,0.2);
+  border-radius: 8px; padding: 1rem;
+}
+.hgc-resp-header {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.hgc-resp-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  box-shadow: 0 0 8px var(--cyan);
+}
+.hgc-resp-name { font-size: 0.62rem; font-weight: 600; color: var(--cyan); letter-spacing: 0.06em; }
+.hgc-resp-line {
+  height: 2px; border-radius: 1px; margin-bottom: 5px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent);
+}
+.rl1{width:90%} .rl2{width:75%} .rl3{width:85%} .rl4{width:60%}
+
+/* floating mini cards */
+.how-float-1 {
+  position: absolute; top: -20px; right: -20px;
+  background: var(--glass2); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); border-radius: 10px;
+  padding: 0.75rem 1rem;
+  animation: floatY 4s ease-in-out infinite;
+}
+.how-float-2 {
+  position: absolute; bottom: -16px; left: -16px;
+  background: var(--glass2); border: 1px solid var(--border2);
+  backdrop-filter: blur(12px); border-radius: 10px;
+  padding: 0.75rem 1rem;
+  animation: floatY 5s ease-in-out infinite 1s;
+}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hf-label { font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); }
+.hf-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* ── PRICING ── */
+#pricing {
+  padding: 7rem 3rem;
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1.5rem; margin-top: 4rem; max-width: 900px; margin-left: auto; margin-right: auto;
+}
+.price-card {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 16px; padding: 2.5rem 2rem;
+  backdrop-filter: blur(20px);
+  position: relative; overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.price-card:hover { transform: translateY(-4px); }
+.price-card.featured {
+  border-color: rgba(124,92,252,0.4);
+  background: rgba(124,92,252,0.06);
+  box-shadow: 0 0 40px rgba(124,92,252,0.15);
+}
+.price-card.featured::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), var(--cyan), transparent);
+}
+.price-popular {
+  position: absolute; top: 1rem; right: 1rem;
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: var(--white); padding: 0.2rem 0.6rem; border-radius: 100px;
+}
+.price-tier {
+  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid); margin-bottom: 1.25rem;
+}
+.price-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem; font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 0.25rem; line-height: 1;
+}
+.price-num span { font-size: 1.1rem; font-weight: 400; color: var(--mid); }
+.price-per { font-size: 0.65rem; color: var(--mid); margin-bottom: 2rem; letter-spacing: 0.04em; }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; text-align: left; }
+.price-features li {
+  font-size: 0.72rem; color: var(--mid);
+  display: flex; align-items: center; gap: 0.6rem; font-weight: 300;
+}
+.pf-check {
+  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.5rem; color: var(--cyan);
+}
+.price-btn {
+  display: block; width: 100%; text-align: center;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 0.85rem; border-radius: 8px; text-decoration: none;
+  transition: all 0.2s;
+}
+.price-btn-outline {
+  border: 1px solid var(--border2); color: var(--white);
+  background: transparent;
+}
+.price-btn-outline:hover { background: var(--glass2); border-color: rgba(255,255,255,0.2); }
+.price-btn-fill {
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: var(--white);
+  box-shadow: 0 0 20px rgba(124,92,252,0.3);
+}
+.price-btn-fill:hover { box-shadow: 0 0 30px rgba(124,92,252,0.5); transform: translateY(-1px); }
+
+/* ── TESTIMONIALS ── */
+#testimonials {
+  padding: 7rem 3rem;
+  border-top: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1.5rem; margin-top: 4rem;
+}
+.testi-card {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 14px; padding: 2rem;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.25s;
+}
+.testi-card:hover { border-color: var(--border2); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 1rem; }
+.tstar {
+  width: 10px; height: 10px;
+  background: var(--purple);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.testi-quote {
+  font-size: 0.82rem; font-weight: 300;
+  line-height: 1.75; color: rgba(240,240,255,0.75);
+  margin-bottom: 1.5rem; letter-spacing: 0.01em;
+  font-style: italic;
+}
+.testi-author { display: flex; align-items: center; gap: 0.75rem; }
+.testi-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+}
+.ta1{background:linear-gradient(135deg,var(--purple),var(--blue));}
+.ta2{background:linear-gradient(135deg,var(--pink),var(--purple));}
+.ta3{background:linear-gradient(135deg,var(--cyan),var(--blue));}
+.testi-name { font-size: 0.72rem; font-weight: 600; margin-bottom: 0.1rem; }
+.testi-role { font-size: 0.62rem; color: var(--mid); letter-spacing: 0.04em; }
+
+/* ── CTA SECTION ── */
+#cta {
+  padding: 7rem 3rem;
+  position: relative; z-index: 1; text-align: center;
+  border-top: 1px solid var(--border);
+}
+.cta-glow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 300px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(124,92,252,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-h {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800; line-height: 1.0; letter-spacing: -0.03em;
+  margin-bottom: 1.25rem; position: relative;
+}
+.cta-sub {
+  font-size: 0.85rem; font-weight: 300; color: var(--mid);
+  margin-bottom: 2.5rem; position: relative;
+  max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.7;
+}
+.cta-btns { display: flex; gap: 1rem; justify-content: center; position: relative; }
+.cta-note {
+  font-size: 0.62rem; color: var(--mid); margin-top: 1.25rem;
+  letter-spacing: 0.04em; position: relative;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg2); border-top: 1px solid var(--border);
+  padding: 3.5rem 3rem 2rem;
+  position: relative; z-index: 1;
+}
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem; padding-bottom: 3rem;
+  border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+}
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.2rem; font-weight: 800; letter-spacing: -0.01em;
+  color: var(--white); text-decoration: none; display: flex;
+  align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+}
+.footer-tagline { font-size: 0.7rem; color: var(--mid); line-height: 1.7; max-width: 200px; }
+.footer-col-h { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(240,240,255,0.25); margin-bottom: 1.25rem; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+.footer-links a { font-size: 0.72rem; color: var(--mid); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--white); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-copy { font-size: 0.6rem; letter-spacing: 0.08em; color: rgba(240,240,255,0.2); text-transform: uppercase; }
+.footer-socials { display: flex; gap: 1.5rem; }
+.footer-socials a { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s; }
+.footer-socials a:hover { color: var(--cyan); }
+
+/* ── REVEAL ANIMS ── */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:960px){
+  nav { padding:1.2rem 1.5rem; }
+  .nav-links { display: none; }
+  #hero { padding: 7rem 1.5rem 4rem; }
+  .mockup-body { grid-template-columns: 1fr; }
+  .mockup-sidebar { display: none; }
+  .features-grid { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  section, #features, #how, #pricing, #testimonials, #cta { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+<div class="bg-grid"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity="0.9"/>
+        <path d="M8 2L14 5.5L8 9L2 5.5L8 2Z" fill="white" opacity="0.4"/>
+      </svg>
+    </div>
+    Prism
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Start free →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    <span class="badge-new">New</span>
+    Prism 2.0 is here — smarter, faster, yours
+  </div>
+
+  <h1 class="hero-h1">
+    Think faster.<br>
+    <span class="grad">Build better.</span>
+  </h1>
+
+  <p class="hero-sub">Prism is the AI workspace that keeps up with how you actually think. Connect your tools, talk to your data, and ship ideas before they go cold.</p>
+
+  <div class="hero-btns">
+    <a href="#" class="btn-glow">Start for free →</a>
+    <a href="#how" class="btn-glass">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5.5 4.5L9.5 7L5.5 9.5V4.5Z" fill="currentColor"/></svg>
+      See how it works
+    </a>
+  </div>
+
+  <div class="hero-social-proof">
+    <div class="proof-avatars">
+      <div class="proof-avatar pa1">JK</div>
+      <div class="proof-avatar pa2">AL</div>
+      <div class="proof-avatar pa3">MR</div>
+      <div class="proof-avatar pa4">ST</div>
+    </div>
+    <p class="proof-text"><strong>12,000+</strong> teams already thinking faster</p>
+  </div>
+
+  <!-- DASHBOARD MOCKUP -->
+  <div class="hero-mockup">
+    <div class="mockup-glow"></div>
+    <div class="mockup-window">
+      <div class="mockup-bar">
+        <div class="mbar-dot md1"></div>
+        <div class="mbar-dot md2"></div>
+        <div class="mbar-dot md3"></div>
+        <span class="mbar-title">Prism — Workspace</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="sb-item active"><div class="sb-icon sb-icon-1">⚡</div>Overview</div>
+          <div class="sb-item"><div class="sb-icon sb-icon-2">💬</div>Ask Prism</div>
+          <div class="sb-item"><div class="sb-icon sb-icon-3">📊</div>Analytics</div>
+          <div class="sb-item"><div class="sb-icon sb-icon-4">✦</div>Projects</div>
+          <div class="sb-item"><div class="sb-icon sb-icon-5">⚙</div>Settings</div>
+        </div>
+        <div class="mockup-main">
+          <p class="mm-title">Good morning — here's your day</p>
+          <div class="mm-cards">
+            <div class="mm-card">
+              <p class="mm-card-label">Tasks completed</p>
+              <p class="mm-card-val c-purple">24</p>
+            </div>
+            <div class="mm-card">
+              <p class="mm-card-label">AI queries today</p>
+              <p class="mm-card-val c-blue">138</p>
+            </div>
+            <div class="mm-card">
+              <p class="mm-card-label">Time saved</p>
+              <p class="mm-card-val c-cyan">4.2h</p>
+            </div>
+          </div>
+          <div class="mm-chart">
+            <div class="bar b1"></div>
+            <div class="bar b2"></div>
+            <div class="bar b3"></div>
+            <div class="bar b4"></div>
+            <div class="bar b5"></div>
+            <div class="bar b6"></div>
+            <div class="bar b7"></div>
+            <div class="bar b8"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGOS -->
+<section id="logos">
+  <p class="logos-label">Trusted by teams at</p>
+  <div class="logos-row">
+    <span class="logo-item">Vercel</span>
+    <span class="logo-item">Linear</span>
+    <span class="logo-item">Figma</span>
+    <span class="logo-item">Notion</span>
+    <span class="logo-item">Stripe</span>
+    <span class="logo-item">Loom</span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="features-header reveal">
+    <p class="sec-tag">Features</p>
+    <h2 class="sec-h">Everything you need.<br><span class="grad">Nothing you don't.</span></h2>
+    <p class="sec-sub">Prism combines AI chat, data analysis, and project management into one focused workspace. No tabs. No context-switching. Just flow.</p>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feat-card fc-purple">
+      <div class="feat-icon fi-purple">⚡</div>
+      <p class="feat-title">Instant AI answers</p>
+      <p class="feat-desc">Ask anything about your data, docs, or projects. Prism reads your workspace and answers in context — not generically.</p>
+    </div>
+    <div class="feat-card fc-blue">
+      <div class="feat-icon fi-blue">🔗</div>
+      <p class="feat-title">Connect everything</p>
+      <p class="feat-desc">Slack, Notion, GitHub, Linear, Google Drive — Prism pulls them together so you never have to chase information again.</p>
+    </div>
+    <div class="feat-card fc-cyan">
+      <div class="feat-icon fi-cyan">📊</div>
+      <p class="feat-title">Smart analytics</p>
+      <p class="feat-desc">Your data visualised, explained, and actioned. Ask "why did signups drop?" and get a real answer with a recommended next step.</p>
+    </div>
+    <div class="feat-card fc-pink">
+      <div class="feat-icon fi-pink">✦</div>
+      <p class="feat-title">AI-assisted writing</p>
+      <p class="feat-desc">Drafts, summaries, emails, briefs — Prism writes in your voice. The more you use it, the more it sounds like you.</p>
+    </div>
+    <div class="feat-card fc-purple">
+      <div class="feat-icon fi-p2">🔒</div>
+      <p class="feat-title">Private by default</p>
+      <p class="feat-desc">Your data never trains our models. Everything stays in your workspace. SOC 2 Type II certified.</p>
+    </div>
+    <div class="feat-card fc-blue">
+      <div class="feat-icon fi-b2">🚀</div>
+      <p class="feat-title">Built for speed</p>
+      <p class="feat-desc">Sub-second responses. Keyboard-first design. A workspace that never makes you wait for the computer to catch up.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="reveal" style="text-align:center;">
+    <p class="sec-tag">How it works</p>
+    <h2 class="sec-h">Up and running<br><span class="grad">in three steps.</span></h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-steps reveal">
+      <div class="how-step active">
+        <div class="hs-num">01</div>
+        <div>
+          <p class="hs-title">Connect your tools</p>
+          <p class="hs-desc">Link your existing stack in minutes. Prism reads your Notion, Slack, GitHub, and more — no manual imports, no CSV uploads.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="hs-num">02</div>
+        <div>
+          <p class="hs-title">Ask anything</p>
+          <p class="hs-desc">Type a question in plain language. Prism searches across all your connected sources and gives you a precise, sourced answer.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="hs-num">03</div>
+        <div>
+          <p class="hs-title">Ship faster</p>
+          <p class="hs-desc">Act on Prism's output directly — write, summarise, assign, schedule. From insight to action without leaving the window.</p>
+        </div>
+      </div>
+    </div>
+    <div class="how-visual reveal">
+      <div class="how-float-1">
+        <p class="hf-label">Response time</p>
+        <p class="hf-val">0.4s avg</p>
+      </div>
+      <div class="how-glass-card">
+        <p class="hgc-label">Ask Prism</p>
+        <div class="hgc-prompt">Why did our conversion rate drop last week?</div>
+        <div class="hgc-response">
+          <div class="hgc-resp-header">
+            <div class="hgc-resp-dot"></div>
+            <span class="hgc-resp-name">Prism</span>
+          </div>
+          <div class="hgc-resp-line rl1"></div>
+          <div class="hgc-resp-line rl2"></div>
+          <div class="hgc-resp-line rl3"></div>
+          <div class="hgc-resp-line rl4"></div>
+        </div>
+      </div>
+      <div class="how-float-2">
+        <p class="hf-label">Sources found</p>
+        <p class="hf-val">14 docs</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="reveal">
+    <p class="sec-tag">Pricing</p>
+    <h2 class="sec-h">Simple, honest<br><span class="grad">pricing.</span></h2>
+    <p class="sec-sub" style="margin-top:1rem;">Start free. Scale when you're ready. No hidden fees, no surprise invoices.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <p class="price-tier">Starter</p>
+      <p class="price-num"><span>$</span>0</p>
+      <p class="price-per">Free forever</p>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>5 AI queries / day</li>
+        <li><div class="pf-check">✓</div>2 connected integrations</li>
+        <li><div class="pf-check">✓</div>Basic analytics</li>
+        <li><div class="pf-check">✓</div>1 workspace</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline">Get started free</a>
+    </div>
+    <div class="price-card featured reveal reveal-delay-1">
+      <span class="price-popular">Most popular</span>
+      <p class="price-tier">Pro</p>
+      <p class="price-num"><span>$</span>29</p>
+      <p class="price-per">per user / month</p>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>Unlimited AI queries</li>
+        <li><div class="pf-check">✓</div>All integrations</li>
+        <li><div class="pf-check">✓</div>Advanced analytics</li>
+        <li><div class="pf-check">✓</div>5 workspaces</li>
+        <li><div class="pf-check">✓</div>Priority support</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-fill">Start Pro free</a>
+    </div>
+    <div class="price-card reveal reveal-delay-2">
+      <p class="price-tier">Enterprise</p>
+      <p class="price-num" style="font-size:2rem;">Custom</p>
+      <p class="price-per">contact us</p>
+      <ul class="price-features">
+        <li><div class="pf-check">✓</div>Everything in Pro</li>
+        <li><div class="pf-check">✓</div>SSO & SAML</li>
+        <li><div class="pf-check">✓</div>Custom models</li>
+        <li><div class="pf-check">✓</div>Dedicated support</li>
+        <li><div class="pf-check">✓</div>SLA guarantee</li>
+      </ul>
+      <a href="#" class="price-btn price-btn-outline">Talk to sales</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="reveal" style="text-align:center;">
+    <p class="sec-tag">Reviews</p>
+    <h2 class="sec-h">Loved by<br><span class="grad">real teams.</span></h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testi-card reveal">
+      <div class="testi-stars"><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div></div>
+      <p class="testi-quote">"Prism cut our standup time in half. Everyone comes in knowing what happened and what needs to happen. It's like having a second brain for the whole team."</p>
+      <div class="testi-author">
+        <div class="testi-avatar ta1">JK</div>
+        <div><p class="testi-name">James Kim</p><p class="testi-role">CTO, Helix</p></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-delay-1">
+      <div class="testi-stars"><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div></div>
+      <p class="testi-quote">"I was sceptical about another AI tool. But Prism actually reads our Notion and gives answers that make sense. It's the first tool that felt built for us."</p>
+      <div class="testi-author">
+        <div class="testi-avatar ta2">AL</div>
+        <div><p class="testi-name">Anna Léa</p><p class="testi-role">Founder, Peau</p></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-delay-2">
+      <div class="testi-stars"><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div><div class="tstar"></div></div>
+      <p class="testi-quote">"The speed is what gets me every time. I type a question and the answer is there before I've finished thinking about it. It genuinely changes how I work."</p>
+      <div class="testi-author">
+        <div class="testi-avatar ta3">MR</div>
+        <div><p class="testi-name">Marco Rossi</p><p class="testi-role">Product Lead, Verta</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <h2 class="cta-h reveal">
+    Ready to think<br>
+    <span class="grad">faster?</span>
+  </h2>
+  <p class="cta-sub reveal">Start free today. No credit card. No setup. Just a smarter way to work.</p>
+  <div class="cta-btns reveal">
+    <a href="#" class="btn-glow">Start for free →</a>
+    <a href="#" class="btn-glass">Book a demo</a>
+  </div>
+  <p class="cta-note reveal">Free forever · No credit card required · Cancel anytime</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <a href="#" class="footer-logo">
+        <div class="nav-logo-mark">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity="0.9"/><path d="M8 2L14 5.5L8 9L2 5.5L8 2Z" fill="white" opacity="0.4"/></svg>
+        </div>
+        Prism
+      </a>
+      <p class="footer-tagline">The AI workspace for teams that move fast and think carefully.</p>
+    </div>
+    <div>
+      <p class="footer-col-h">Product</p>
+      <ul class="footer-links">
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Integrations</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Changelog</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-h">Company</p>
+      <ul class="footer-links">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-h">Legal</p>
+      <ul class="footer-links">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Security</a></li>
+        <li><a href="#">Status</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Prism Technologies Inc.</span>
+    <div class="footer-socials">
+      <a href="#">Twitter</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* cursor */
+const cur = document.getElementById('cur');
+const curRing = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function anim(){
+  rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
+  curRing.style.left=rx+'px'; curRing.style.top=ry+'px';
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('a,button,.price-card,.feat-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+});
+
+/* scroll reveal */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* how-it-works step highlight */
+const steps = document.querySelectorAll('.how-step');
+steps.forEach((s,i)=>{
+  s.addEventListener('mouseenter',()=>{
+    steps.forEach(st=>st.classList.remove('active'));
+    s.classList.add('active');
+  });
+});
+
+/* smooth scroll for nav */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); }
+  });
+});
+
+/* parallax on bg glows */
+window.addEventListener('scroll',()=>{
+  const sy = window.scrollY;
+  document.querySelector('.bg-glow-1').style.transform=`translateY(${sy*0.15}px)`;
+  document.querySelector('.bg-glow-2').style.transform=`translateY(${-sy*0.1}px)`;
+});
+</script>
+</body>
+</html>

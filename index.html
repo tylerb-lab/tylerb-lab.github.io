@@ -98,36 +98,6 @@ nav.scrolled {
 }
 #noiseCanvas { display: block; width: 100%; height: 100%; border-radius: 4px; position: relative; z-index: 1; }
 #tvVideo { display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 4px; position: absolute; inset: 0; z-index: 2; }
-.tv-play-btn {
-  position: absolute; inset: 0; z-index: 15;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; opacity: 0; transition: opacity .3s;
-}
-.tv-screen:hover .tv-play-btn { opacity: 1; }
-.tv-play-icon {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(200,137,74,0.9);
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .2s, background .2s;
-}
-.tv-play-btn:hover .tv-play-icon { transform: scale(1.1); background: var(--accent); }
-.tv-play-icon::after {
-  content: '';
-  border-left: 18px solid #2a2018;
-  border-top: 11px solid transparent;
-  border-bottom: 11px solid transparent;
-  margin-left: 4px;
-}
-.tv-playing .tv-play-btn { opacity: 0 !important; }
-.tv-stop-btn {
-  position: absolute; top: 8px; right: 8px; z-index: 16;
-  display: none; cursor: pointer;
-  background: rgba(0,0,0,.6); border: 1px solid rgba(200,137,74,.4);
-  color: var(--accent); font-size: .55rem; letter-spacing: .12em;
-  text-transform: uppercase; padding: .25rem .5rem;
-  font-family: 'Outfit', sans-serif;
-}
-.tv-playing .tv-stop-btn { display: block; }
 .vhs-overlay { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
 .vhs-line { position: absolute; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.18); animation: vhsScan 3s linear infinite; }
 .vhs-line2 { height: 10px; background: rgba(255,255,255,0.10); animation: vhsScan 5s linear infinite 1s; }
@@ -144,6 +114,39 @@ nav.scrolled {
 .knob { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #3a3530, #1a1612); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 .knob-sm { width: 10px; height: 10px; }
 .tv-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s ease-in-out infinite; }
+.knob-play {
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  position: relative;
+}
+.knob-play:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(200,137,74,0.6), 0 2px 4px rgba(0,0,0,0.5);
+  background: radial-gradient(circle at 35% 35%, #5a4030, #3a2010);
+}
+.knob-play:active { transform: scale(0.95); }
+.knob-play.playing {
+  background: radial-gradient(circle at 35% 35%, var(--accent), #8a4010);
+  box-shadow: 0 0 10px rgba(200,137,74,0.8), 0 2px 4px rgba(0,0,0,0.5);
+  animation: none;
+}
+/* tooltip */
+.knob-play::after {
+  content: 'PLAY';
+  position: absolute; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(12,11,9,0.95);
+  color: var(--accent);
+  font-family: 'Outfit', sans-serif;
+  font-size: .45rem; letter-spacing: .15em;
+  padding: .2rem .4rem;
+  white-space: nowrap; opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+  border: 1px solid rgba(200,137,74,.3);
+}
+.knob-play:hover::after { opacity: 1; }
+.knob-play.playing::after { content: 'STOP'; }
 @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 .tv-side { position: absolute; top: 8px; bottom: 4px; right: -14px; width: 14px; background: linear-gradient(to right, #1a1710, #0e0c09); border-radius: 0 6px 6px 0; border-top: 1.5px solid rgba(255,255,255,0.03); border-right: 1.5px solid rgba(255,255,255,0.02); }
 .tv-bottom { position: absolute; left: 10px; right: 4px; bottom: -10px; height: 10px; background: linear-gradient(to bottom, #1a1710, #0e0c09); border-radius: 0 0 6px 6px; border-bottom: 1.5px solid rgba(255,255,255,0.02); }
@@ -271,19 +274,15 @@ footer a:hover { color: var(--accent); }
               <div class="vhs-line vhs-line2"></div>
               <div class="vhs-bleed"></div>
             </div>
-            <div class="tv-play-btn" id="tvPlayBtn" onclick="playTV()">
-              <div class="tv-play-icon"></div>
-            </div>
-            <div class="tv-stop-btn" onclick="stopTV()">■ STOP</div>
           </div>
         </div>
         <div class="tv-controls">
           <span class="tv-brand">TYLER&nbsp;PRO&nbsp;III</span>
           <div class="tv-knobs">
-            <div class="tv-indicator"></div>
+            <div class="tv-indicator" id="tvIndicator"></div>
             <div class="knob knob-sm"></div>
             <div class="knob"></div>
-            <div class="knob"></div>
+            <div class="knob knob-play" id="knobPlay" onclick="toggleTV()" title="Play"></div>
           </div>
         </div>
       </div>

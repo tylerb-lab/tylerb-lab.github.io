@@ -379,7 +379,42 @@ footer a:hover { color: var(--accent); }
   <span>© 2026</span>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+/* ── TV VIDEO PLAYER ── */
+function toggleTV() {
+  const knob      = document.getElementById('knobPlay');
+  const indicator = document.getElementById('tvIndicator');
+  const video     = document.getElementById('tvVideo');
+  const canvas    = document.getElementById('noiseCanvas');
+  if (!knob || !video || !canvas) return;
+  if (knob.classList.contains('playing')) {
+    video.pause(); video.currentTime = 0;
+    video.style.display = 'none';
+    canvas.style.transition = 'opacity .4s';
+    canvas.style.opacity = '1';
+    knob.classList.remove('playing');
+    if (indicator) { indicator.style.background = ''; indicator.style.boxShadow = ''; }
+  } else {
+    knob.classList.add('playing');
+    if (indicator) { indicator.style.background = '#d03030'; indicator.style.boxShadow = '0 0 8px #d03030'; }
+    video.style.display = 'block';
+    video.style.filter = 'contrast(1.08) brightness(0.88) saturate(0.75) sepia(0.12)';
+    canvas.style.transition = 'opacity .4s';
+    canvas.style.opacity = '0';
+    var playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function(err) {
+        console.log('Video error:', err);
+        canvas.style.opacity = '1';
+        video.style.display = 'none';
+        knob.classList.remove('playing');
+        if (indicator) { indicator.style.background = ''; indicator.style.boxShadow = ''; }
+      });
+    }
+  }
+}
+
+</script><script>
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });

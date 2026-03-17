@@ -48,7 +48,7 @@ nav.scrolled {
 #hero {
   min-height: 100vh; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 6rem 2rem 4rem; position: relative; overflow: hidden;
+  padding: 6rem 2rem 6rem; position: relative; overflow: hidden;
   background: radial-gradient(ellipse at 50% 40%, #1a1208 0%, var(--bg) 70%);
 }
 #hero::after {
@@ -57,9 +57,9 @@ nav.scrolled {
 }
 
 /* ── 3D TV ── */
-.tv-wrapper { position: relative; perspective: 900px; margin-bottom: 3.5rem; }
+.tv-wrapper { position: relative; perspective: 900px; margin-bottom: 2.5rem; }
 .tv-3d {
-  position: relative; width: 380px; transform-style: preserve-3d;
+  position: relative; width: 400px; transform-style: preserve-3d;
   transform: rotateX(6deg) rotateY(-8deg);
   animation: tvFloat 6s ease-in-out infinite;
   filter: drop-shadow(0 40px 60px rgba(0,0,0,0.7)) drop-shadow(0 0 40px rgba(200,137,74,0.12));
@@ -96,7 +96,38 @@ nav.scrolled {
   content: ''; position: absolute; inset: 0; z-index: 9; pointer-events: none;
   background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.45) 3px, rgba(0,0,0,0.45) 4px);
 }
-#noiseCanvas { display: block; width: 100%; height: 100%; border-radius: 4px; }
+#noiseCanvas { display: block; width: 100%; height: 100%; border-radius: 4px; position: relative; z-index: 1; }
+#tvVideo { display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 4px; position: absolute; inset: 0; z-index: 2; }
+.tv-play-btn {
+  position: absolute; inset: 0; z-index: 15;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0; transition: opacity .3s;
+}
+.tv-screen:hover .tv-play-btn { opacity: 1; }
+.tv-play-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(200,137,74,0.9);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, background .2s;
+}
+.tv-play-btn:hover .tv-play-icon { transform: scale(1.1); background: var(--accent); }
+.tv-play-icon::after {
+  content: '';
+  border-left: 18px solid #2a2018;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  margin-left: 4px;
+}
+.tv-playing .tv-play-btn { opacity: 0 !important; }
+.tv-stop-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 16;
+  display: none; cursor: pointer;
+  background: rgba(0,0,0,.6); border: 1px solid rgba(200,137,74,.4);
+  color: var(--accent); font-size: .55rem; letter-spacing: .12em;
+  text-transform: uppercase; padding: .25rem .5rem;
+  font-family: 'Outfit', sans-serif;
+}
+.tv-playing .tv-stop-btn { display: block; }
 .vhs-overlay { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
 .vhs-line { position: absolute; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.18); animation: vhsScan 3s linear infinite; }
 .vhs-line2 { height: 10px; background: rgba(255,255,255,0.10); animation: vhsScan 5s linear infinite 1s; }
@@ -205,7 +236,7 @@ footer a:hover { color: var(--accent); }
   nav { padding: 1.2rem 1.5rem; }
   #hero { padding: 5rem 1.5rem 3rem; }
   .tv-3d { width: 300px; }
-  .tv-screen { width: 268px; height: 201px; }
+  .tv-screen { width: 268px; height: 201px; } .tv-3d { width: 320px; }
   #projects, #contact { padding: 5rem 1.5rem; }
   #about { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
   footer { flex-direction: column; gap: 0.5rem; text-align: center; }
@@ -230,13 +261,20 @@ footer a:hover { color: var(--accent); }
       <div class="tv-bottom"></div>
       <div class="tv-body">
         <div class="tv-bezel">
-          <div class="tv-screen">
+          <div class="tv-screen" id="tvScreen">
             <canvas id="noiseCanvas" width="340" height="255"></canvas>
+            <video id="tvVideo" playsinline loop>
+              <source src="tv-video.mp4" type="video/mp4">
+            </video>
             <div class="vhs-overlay">
               <div class="vhs-line"></div>
               <div class="vhs-line vhs-line2"></div>
               <div class="vhs-bleed"></div>
             </div>
+            <div class="tv-play-btn" id="tvPlayBtn" onclick="playTV()">
+              <div class="tv-play-icon"></div>
+            </div>
+            <div class="tv-stop-btn" onclick="stopTV()">■ STOP</div>
           </div>
         </div>
         <div class="tv-controls">
@@ -291,10 +329,7 @@ footer a:hover { color: var(--accent); }
         <div class="proj-img-wrap"><img src="mara.png" alt="Mara."></div>
         <div class="proj-body"><div class="proj-info"><p class="proj-num">03</p><p class="proj-title">Mara.</p><div class="proj-tags"><span class="proj-tag">Personal Brand</span><span class="proj-tag">Blog</span><span class="proj-tag">Three.js</span></div></div><span class="project-arrow">→</span></div>
       </a>
-      <a class="project-row" href="prism.html" target="_blank">
-        <div class="proj-img-wrap"><img src="prism.png" alt="Prism"></div>
-        <div class="proj-body"><div class="proj-info"><p class="proj-num">04</p><p class="proj-title">Prism</p><div class="proj-tags"><span class="proj-tag">SaaS</span><span class="proj-tag">AI Tool</span><span class="proj-tag">Glassmorphism</span></div></div><span class="project-arrow">→</span></div>
-      </a>
+
     </div>
   </section>
 
@@ -324,7 +359,7 @@ footer a:hover { color: var(--accent); }
     <h2 class="section-title">Let's make <em>something.</em></h2>
     <p class="contact-note">Open for freelance, collaborations, and full-time opportunities.</p>
     <div class="contact-row">
-      <a href="mailto:tbowes509@gmail.com" class="contact-btn">Email</a>
+      <a href="/cdn-cgi/l/email-protection#a8dccac7dfcddb9d9891e8cfc5c9c1c486cbc7c5" class="contact-btn">Email</a>
       <a href="https://github.com/tylerb-lab" target="_blank" rel="noopener" class="contact-btn">GitHub</a>
       <a href="https://dribbble.com/tbowes509" target="_blank" rel="noopener" class="contact-btn">Dribbble</a>
     </div>
@@ -340,14 +375,14 @@ footer a:hover { color: var(--accent); }
 <footer>
   <span class="footer-logo">Tyler Bowes</span>
   <div style="display:flex;gap:2rem;align-items:center;">
-    <a href="mailto:tbowes509@gmail.com">tbowes509@gmail.com</a>
+    <a href="/cdn-cgi/l/email-protection#8efaece1f9ebfdbbbeb7cee9e3efe7e2a0ede1e3"><span class="__cf_email__" data-cfemail="88fceae7ffedfbbdb8b1c8efe5e9e1e4a6ebe7e5">[email&#160;protected]</span></a>
     <a href="https://github.com/tylerb-lab" target="_blank" rel="noopener">GitHub</a>
     <a href="https://dribbble.com/tbowes509" target="_blank" rel="noopener">Dribbble</a>
   </div>
   <span>© 2026</span>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });
@@ -376,11 +411,4 @@ function drawNoise() {
   ctx.putImageData(imageData, 0, 0);
   if (Math.random() < 0.10) { const gy = Math.random() * H; const gh = Math.random() * 16 + 2; ctx.fillStyle = `rgba(255,245,200,${(Math.random() * 0.4 + 0.15).toFixed(2)})`; ctx.fillRect(0, gy, W, gh); }
   if (Math.random() < 0.06) { const gy = Math.random() * H; ctx.fillStyle = `rgba(0,0,0,${(Math.random() * 0.55 + 0.2).toFixed(2)})`; ctx.fillRect(0, gy, W, Math.random() * 10 + 2); }
-  if (Math.random() < 0.08) { const sy = (Math.random() * H * 0.7 + H * 0.1) | 0; const sh = (Math.random() * 10 + 3) | 0; const shift = (Math.random() * 6 + 2) | 0; try { const sliceData = ctx.getImageData(0, sy, W, sh); ctx.putImageData(sliceData, shift, sy); } catch(e) {} }
-  if (Math.random() < 0.03) { ctx.fillStyle = `rgba(0,0,0,${(Math.random() * 0.25 + 0.1).toFixed(2)})`; ctx.fillRect(0, 0, W, H); }
-  requestAnimationFrame(drawNoise);
-}
-drawNoise();
-</script>
-</body>
-</html>
+  if (Math.random() < 0.08) { const sy = (Math.random() * H * 0.7 + H * 0.1) | 0; const sh = (Math.random() * 10 + 3) | 0; const shift = (Math.random() * 6 + 2) | 0; try { const sliceData = ctx.getImag

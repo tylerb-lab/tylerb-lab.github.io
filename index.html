@@ -4,248 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tyler Bowes — Designer & Developer</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0c0b09;
-  --warm: #f5efe6;
-  --cream: #ede6d8;
-  --paper: #e8dfc8;
-  --brown: #2a2018;
-  --mid: #6b5c48;
-  --accent: #c8894a;
-  --accent2: #d4a96a;
-  --muted: rgba(245,239,230,0.25);
-  --border: rgba(200,137,74,0.15);
-  --border2: rgba(200,137,74,0.25);
-}
-
-html { scroll-behavior: smooth; }
-body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--cream); overflow-x: hidden; }
-
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.4rem 3rem;
-  background: rgba(12,11,9,0.0);
-  transition: background 0.4s, border-color 0.4s;
-  border-bottom: 1px solid transparent;
-}
-nav.scrolled {
-  background: rgba(12,11,9,0.94);
-  border-bottom-color: rgba(200,137,74,0.12);
-  backdrop-filter: blur(12px);
-}
-.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 400; letter-spacing: 0.1em; color: var(--cream); }
-.nav-links { display: flex; gap: 2.5rem; list-style: none; }
-.nav-links a { font-size: 0.68rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(245,239,230,0.5); text-decoration: none; transition: color 0.2s; }
-.nav-links a:hover { color: var(--accent); }
-
-/* ── HERO ── */
-#hero {
-  min-height: 100vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 6rem 2rem 6rem; position: relative; overflow: hidden;
-  background: radial-gradient(ellipse at 50% 40%, #1a1208 0%, var(--bg) 70%);
-}
-#hero::after {
-  content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(200,137,74,0.25), transparent);
-}
-
-/* ── 3D TV ── */
-.tv-wrapper { position: relative; perspective: 900px; margin-bottom: 2.5rem; }
-.tv-3d {
-  position: relative; width: 400px; transform-style: preserve-3d;
-  transform: rotateX(6deg) rotateY(-8deg);
-  animation: tvFloat 6s ease-in-out infinite;
-  filter: drop-shadow(0 40px 60px rgba(0,0,0,0.7)) drop-shadow(0 0 40px rgba(200,137,74,0.12));
-}
-@keyframes tvFloat {
-  0%,100% { transform: rotateX(6deg) rotateY(-8deg) translateY(0px); }
-  50%      { transform: rotateX(4deg) rotateY(-6deg) translateY(-10px); }
-}
-.tv-body {
-  background: linear-gradient(160deg, #2e2a24 0%, #1a1710 50%, #111009 100%);
-  border-radius: 18px 18px 14px 14px; padding: 18px 20px 28px;
-  border: 1.5px solid rgba(255,255,255,0.06); position: relative;
-}
-.tv-body::before {
-  content: ''; position: absolute; top: 0; left: 12px; right: 12px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); border-radius: 50%;
-}
-.tv-bezel {
-  background: #0a0907; border-radius: 10px; padding: 10px;
-  border: 1px solid rgba(0,0,0,0.8);
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.03);
-  position: relative;
-}
-.tv-screen {
-  position: relative; width: 340px; height: 255px;
-  border-radius: 6px; overflow: hidden; background: #050504;
-}
-.tv-screen::after {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 30% 25%, rgba(255,255,255,0.04) 0%, transparent 55%), linear-gradient(135deg, rgba(255,255,255,0.025) 0%, transparent 50%);
-  pointer-events: none; z-index: 10; border-radius: 6px;
-}
-.tv-screen::before {
-  content: ''; position: absolute; inset: 0; z-index: 9; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.45) 3px, rgba(0,0,0,0.45) 4px);
-}
-#noiseCanvas { display: block; width: 100%; height: 100%; border-radius: 4px; }
-#tvVideo { display: none; width: 340px; height: 255px; object-fit: cover; border-radius: 4px; position: absolute; top: 0; left: 0; z-index: 2; }
-.vhs-overlay { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
-.vhs-line { position: absolute; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.18); animation: vhsScan 3s linear infinite; }
-.vhs-line2 { height: 10px; background: rgba(255,255,255,0.10); animation: vhsScan 5s linear infinite 1s; }
-@keyframes vhsScan { 0% { top: -10px; opacity: 0.8; } 100% { top: 110%; opacity: 0; } }
-.vhs-bleed {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(180,100,30,0.12) 0%, transparent 30%, rgba(30,60,100,0.10) 70%, transparent 100%);
-  animation: bleedShift 8s ease-in-out infinite;
-}
-@keyframes bleedShift { 0%,100% { opacity: 1; transform: translateY(0); } 50% { opacity: 0.6; transform: translateY(-3px); } }
-.tv-controls { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px 0; }
-.tv-brand { font-family: 'Cormorant Garamond', serif; font-size: 0.62rem; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.15); }
-.tv-knobs { display: flex; gap: 10px; align-items: center; }
-.knob { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #3a3530, #1a1612); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.knob-sm { width: 10px; height: 10px; }
-.tv-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 2s ease-in-out infinite; }
-.knob-play {
-  cursor: pointer;
-  transition: transform .15s, box-shadow .15s;
-  position: relative;
-}
-.knob-play:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 8px rgba(200,137,74,0.6), 0 2px 4px rgba(0,0,0,0.5);
-  background: radial-gradient(circle at 35% 35%, #5a4030, #3a2010);
-}
-.knob-play:active { transform: scale(0.95); }
-.knob-play.playing {
-  background: radial-gradient(circle at 35% 35%, var(--accent), #8a4010);
-  box-shadow: 0 0 10px rgba(200,137,74,0.8), 0 2px 4px rgba(0,0,0,0.5);
-  animation: none;
-}
-/* tooltip */
-.knob-play::after {
-  content: 'PLAY';
-  position: absolute; bottom: 20px; left: 50%;
-  transform: translateX(-50%);
-  background: rgba(12,11,9,0.95);
-  color: var(--accent);
-  font-family: 'Outfit', sans-serif;
-  font-size: .45rem; letter-spacing: .15em;
-  padding: .2rem .4rem;
-  white-space: nowrap; opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s;
-  border: 1px solid rgba(200,137,74,.3);
-}
-.knob-play:hover::after { opacity: 1; }
-.knob-play.playing::after { content: 'STOP'; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-.tv-side { position: absolute; top: 8px; bottom: 4px; right: -14px; width: 14px; background: linear-gradient(to right, #1a1710, #0e0c09); border-radius: 0 6px 6px 0; border-top: 1.5px solid rgba(255,255,255,0.03); border-right: 1.5px solid rgba(255,255,255,0.02); }
-.tv-bottom { position: absolute; left: 10px; right: 4px; bottom: -10px; height: 10px; background: linear-gradient(to bottom, #1a1710, #0e0c09); border-radius: 0 0 6px 6px; border-bottom: 1.5px solid rgba(255,255,255,0.02); }
-.tv-legs { display: flex; justify-content: space-around; padding: 0 40px; margin-top: -2px; }
-.leg { width: 10px; height: 22px; background: linear-gradient(to bottom, #1e1b15, #0e0c09); border-radius: 0 0 4px 4px; border: 1px solid rgba(255,255,255,0.04); border-top: none; }
-
-/* ── HERO TEXT ── */
-.hero-text { text-align: center; position: relative; }
-.hero-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(4.5rem, 12vw, 9rem); font-weight: 300; line-height: 0.9; letter-spacing: 0.04em; color: var(--cream); margin-bottom: 1.25rem; }
-.hero-tagline { font-size: 0.78rem; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,239,230,0.4); }
-.hero-tagline em { font-style: normal; color: var(--accent); }
-.hero-scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,239,230,0.25); animation: bounce 2s ease-in-out infinite; }
-.hero-scroll-hint::after { content: ''; width: 1px; height: 36px; background: linear-gradient(to bottom, rgba(200,137,74,0.4), transparent); }
-@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(5px)} }
-
-/* ── WARM SECTIONS ── */
-.warm-sections { background: var(--cream); color: var(--brown); }
-.section-divider { height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
-
-/* WORK */
-#projects { background: var(--cream); padding: 7rem 3rem; }
-.section-eyebrow { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
-.eyebrow-dash { width: 28px; height: 1px; background: var(--accent); }
-.eyebrow-text { font-size: 0.64rem; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
-.section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 300; line-height: 1.05; color: var(--brown); margin-bottom: 3.5rem; letter-spacing: -0.01em; }
-.section-title em { font-style: italic; color: var(--accent); }
-
-/* PROJECT CARDS */
-.projects-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
-.projects-list-clients { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
-@media(max-width:700px){ .projects-list, .projects-list-clients { grid-template-columns: 1fr; } }
-
-.sub-section-label { font-size: 0.6rem; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mid); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
-.sub-section-label::before { content:''; display:block; width:20px; height:1px; background:var(--mid); }
-
-.client-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--accent); color: var(--brown); font-size: 0.52rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; padding: 0.2rem 0.6rem; margin-bottom: 1.25rem; }
-.client-badge::before { content: '★'; font-size: 0.5rem; }
-
-.project-row { background: var(--cream); border: 1px solid rgba(42,32,24,0.1); display: flex; flex-direction: column; transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; cursor: pointer; text-decoration: none; color: inherit; overflow: hidden; }
-.project-row:hover { border-color: rgba(42,32,24,0.3); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(42,32,24,0.1); }
-.project-row:hover .project-arrow { opacity: 1; transform: translateX(4px); }
-.proj-img-wrap { width: 100%; overflow: hidden; position: relative; background: var(--bg); }
-.proj-img-wrap img { width: 100%; height: auto; display: block; transition: transform 0.5s ease; }
-.project-row:hover .proj-img-wrap img { transform: scale(1.02); }
-.proj-body { padding: 1.5rem 1.75rem 1.75rem; display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(42,32,24,0.08); flex: 1; }
-.proj-num { font-family: 'Cormorant Garamond', serif; font-size: 0.82rem; font-weight: 300; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 0.3rem; }
-.proj-info { flex: 1; }
-.proj-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; color: var(--brown); letter-spacing: 0.01em; margin-bottom: 0.4rem; }
-.proj-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.proj-tag { font-size: 0.54rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); background: rgba(42,32,24,0.06); padding: 0.18rem 0.55rem; border-radius: 2px; }
-.project-arrow { font-size: 1.1rem; color: var(--accent); opacity: 0; transition: opacity 0.25s, transform 0.25s; flex-shrink: 0; margin-left: 1rem; }
-
-/* ABOUT */
-#about { background: var(--paper); padding: 7rem 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; border-top: 1px solid rgba(42,32,24,0.08); }
-.about-img { aspect-ratio: 3/4; position: relative; background: var(--cream); border: 1px solid rgba(42,32,24,0.12); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; overflow: hidden; }
-.about-img::after { content: ''; position: absolute; top: 12px; left: 12px; right: -12px; bottom: -12px; border: 1px solid rgba(42,32,24,0.1); z-index: -1; }
-.about-body { font-size: 0.78rem; font-weight: 300; line-height: 1.95; color: var(--mid); letter-spacing: 0.02em; margin-bottom: 2.5rem; }
-.skills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
-.skill-tag { font-size: 0.6rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brown); border: 1px solid rgba(42,32,24,0.2); padding: 0.35rem 0.85rem; transition: border-color 0.2s, color 0.2s; }
-.skill-tag:hover { border-color: var(--accent); color: var(--accent); }
-
-/* CONTACT */
-#contact { background: var(--brown); padding: 7rem 3rem; color: var(--cream); text-align: center; position: relative; overflow: hidden; }
-#contact::before { content: 'TYLER'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Cormorant Garamond', serif; font-size: clamp(100px, 22vw, 260px); font-weight: 600; font-style: italic; color: transparent; -webkit-text-stroke: 1px rgba(200,137,74,0.05); pointer-events: none; white-space: nowrap; letter-spacing: 0.04em; }
-#contact .eyebrow-text { color: var(--accent2); }
-#contact .eyebrow-dash { background: var(--accent2); }
-#contact .section-eyebrow { justify-content: center; }
-#contact .section-title { color: var(--cream); }
-.contact-note { font-size: 0.75rem; font-weight: 300; color: rgba(232,223,200,0.45); margin-bottom: 3.5rem; letter-spacing: 0.04em; position: relative; }
-.contact-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem; position: relative; }
-.contact-btn { font-size: 0.66rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cream); text-decoration: none; border: 1px solid rgba(200,137,74,0.3); padding: 0.8rem 1.75rem; transition: border-color 0.25s, color 0.25s, background 0.25s; }
-.contact-btn:hover { border-color: var(--accent); color: var(--accent); }
-.contact-form { max-width: 520px; margin: 0 auto; text-align: left; position: relative; }
-.form-row { margin-bottom: 1.25rem; }
-.form-row label { display: block; font-size: 0.6rem; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(200,137,74,0.6); margin-bottom: 0.5rem; }
-.form-row input, .form-row textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(200,137,74,0.15); color: var(--cream); font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 300; padding: 0.85rem 1.1rem; outline: none; transition: border-color 0.2s; resize: vertical; letter-spacing: 0.02em; }
-.form-row input:focus, .form-row textarea:focus { border-color: var(--accent); }
-.form-row input::placeholder, .form-row textarea::placeholder { color: rgba(232,223,200,0.18); }
-.form-submit { width: 100%; background: var(--accent); border: none; color: var(--brown); font-family: 'Outfit', sans-serif; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; padding: 1rem; cursor: pointer; transition: opacity 0.2s; }
-.form-submit:hover { opacity: 0.85; }
-
-/* FOOTER */
-footer { background: #080706; border-top: 1px solid rgba(200,137,74,0.08); padding: 1.75rem 3rem; display: flex; justify-content: space-between; align-items: center; }
-.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; letter-spacing: 0.08em; color: var(--cream); }
-footer span { font-size: 0.58rem; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,239,230,0.25); }
-footer a { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,239,230,0.25); text-decoration: none; transition: color 0.2s; }
-footer a:hover { color: var(--accent); }
-
-@media (max-width: 860px) {
-  nav { padding: 1.2rem 1.5rem; }
-  #hero { padding: 5rem 1.5rem 3rem; }
-  .tv-3d { width: 300px; }
-  .tv-screen { width: 268px; height: 201px; } .tv-3d { width: 320px; }
-  #projects, #contact { padding: 5rem 1.5rem; }
-  #about { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
-  footer { flex-direction: column; gap: 0.5rem; text-align: center; }
-}
+/* KEEP YOUR FULL ORIGINAL CSS HERE (unchanged) */
 </style>
 </head>
+
 <body>
 
 <nav id="mainNav">
@@ -262,195 +28,196 @@ footer a:hover { color: var(--accent); }
     <div class="tv-3d">
       <div class="tv-side"></div>
       <div class="tv-bottom"></div>
+
       <div class="tv-body">
         <div class="tv-bezel">
-          <div class="tv-screen" id="tvScreen">
+          <div class="tv-screen">
+
             <canvas id="noiseCanvas" width="340" height="255"></canvas>
-            <video id="tvVideo" src="tv-video.mp4" playsinline loop></video>
+
+            <!-- IMPORTANT: muted added -->
+            <video id="tvVideo" src="./tv-video.mp4" playsinline loop muted></video>
+
             <div class="vhs-overlay">
               <div class="vhs-line"></div>
               <div class="vhs-line vhs-line2"></div>
               <div class="vhs-bleed"></div>
             </div>
+
           </div>
         </div>
+
         <div class="tv-controls">
           <span class="tv-brand">TYLER&nbsp;PRO&nbsp;III</span>
           <div class="tv-knobs">
             <div class="tv-indicator" id="tvIndicator"></div>
             <div class="knob knob-sm"></div>
             <div class="knob"></div>
-            <div class="knob knob-play" id="knobPlay" title="Play"></div>
+            <div class="knob knob-play" id="knobPlay"></div>
           </div>
         </div>
       </div>
-      <div class="tv-legs"><div class="leg"></div><div class="leg"></div></div>
-    </div>
-  </div>
-  <div class="hero-text">
-    <h1 class="hero-name">Tyler Bowes</h1>
-    <p class="hero-tagline">Web Designer &nbsp;·&nbsp; <em>Developer</em> &nbsp;·&nbsp; Maker of things</p>
-  </div>
-  <div class="hero-scroll-hint">Scroll</div>
-</section>
 
-<div class="warm-sections">
-  <div class="section-divider"></div>
-  <section id="projects">
-    <div class="section-eyebrow"><div class="eyebrow-dash"></div><span class="eyebrow-text">Work</span></div>
-    <h2 class="section-title">What I've <em>Built</em></h2>
-
-    <p class="sub-section-label">Live sites</p>
-    <div class="projects-list-clients">
-      <a class="project-row" href="https://tylerb-lab.github.io/spill" target="_blank" rel="noopener">
-        <div class="proj-img-wrap"><img src="spill.png" alt="Spill."></div>
-        <div class="proj-body"><div class="proj-info"><div class="client-badge">Live</div><p class="proj-title">Spill.</p><div class="proj-tags"><span class="proj-tag">Coffee Blog</span><span class="proj-tag">Multi-page</span><span class="proj-tag">CMS</span></div></div><span class="project-arrow">↗</span></div>
-      </a>
-      <a class="project-row" href="https://www.secondlifedevices.com.au" target="_blank" rel="noopener">
-        <div class="proj-img-wrap"><img src="sld.png" alt="Second Life Devices"></div>
-        <div class="proj-body"><div class="proj-info"><div class="client-badge">Client</div><p class="proj-title">Second Life Devices</p><div class="proj-tags"><span class="proj-tag">E-commerce</span><span class="proj-tag">Web Design</span><span class="proj-tag">secondlifedevices.com.au</span></div></div><span class="project-arrow">↗</span></div>
-      </a>
-    </div>
-
-    <p class="sub-section-label">Example sites</p>
-    <div class="projects-list">
-      <a class="project-row" href="peau.html" target="_blank">
-        <div class="proj-img-wrap"><img src="peau.png" alt="Peau"></div>
-        <div class="proj-body"><div class="proj-info"><p class="proj-num">01</p><p class="proj-title">Peau</p><div class="proj-tags"><span class="proj-tag">E-commerce</span><span class="proj-tag">Skincare</span><span class="proj-tag">Web Design</span></div></div><span class="project-arrow">→</span></div>
-      </a>
-      <a class="project-row" href="fold.html" target="_blank">
-        <div class="proj-img-wrap"><img src="fold.png" alt="FOLD."></div>
-        <div class="proj-body"><div class="proj-info"><p class="proj-num">02</p><p class="proj-title">FOLD.</p><div class="proj-tags"><span class="proj-tag">Agency</span><span class="proj-tag">Editorial</span><span class="proj-tag">Web Design</span></div></div><span class="project-arrow">→</span></div>
-      </a>
-      <a class="project-row" href="mara.html" target="_blank">
-        <div class="proj-img-wrap"><img src="mara.png" alt="Mara."></div>
-        <div class="proj-body"><div class="proj-info"><p class="proj-num">03</p><p class="proj-title">Mara.</p><div class="proj-tags"><span class="proj-tag">Personal Brand</span><span class="proj-tag">Blog</span><span class="proj-tag">Three.js</span></div></div><span class="project-arrow">→</span></div>
-      </a>
-
-    </div>
-  </section>
-
-  <section id="about">
-    <div class="about-img">
-      <img src="tyler.png" alt="Tyler Bowes" style="width:100%;height:100%;object-fit:cover;display:block;">
-    </div>
-    <div>
-      <div class="section-eyebrow"><div class="eyebrow-dash"></div><span class="eyebrow-text">The Person</span></div>
-      <h2 class="section-title">About <em>Tyler</em></h2>
-      <p class="about-body">I'm Tyler — a 17-year-old web designer and developer from Sydney. I've been building websites since I was 14, obsessing over fonts, layouts, and the details most people scroll past.<br><br>I care about the details most people scroll past — the typography, the micro-interactions, the thing that makes someone lean in. Good design doesn't have to be complicated. It just has to be right.</p>
-      <div class="skills">
-        <span class="skill-tag">HTML / CSS</span>
-        <span class="skill-tag">JavaScript</span>
-        <span class="skill-tag">React</span>
-        <span class="skill-tag">Figma</span>
-        <span class="skill-tag">Vue.js</span>
-        <span class="skill-tag">Branding</span>
-        <span class="skill-tag">Motion</span>
-        <span class="skill-tag">Three.js</span>
+      <div class="tv-legs">
+        <div class="leg"></div>
+        <div class="leg"></div>
       </div>
     </div>
-  </section>
-
-  <section id="contact">
-    <div class="section-eyebrow"><div class="eyebrow-dash"></div><span class="eyebrow-text">Get in Touch</span></div>
-    <h2 class="section-title">Let's make <em>something.</em></h2>
-    <p class="contact-note">Open for freelance, collaborations, and full-time opportunities.</p>
-    <div class="contact-row">
-      <a href="/cdn-cgi/l/email-protection#a8dccac7dfcddb9d9891e8cfc5c9c1c486cbc7c5" class="contact-btn">Email</a>
-      <a href="https://github.com/tylerb-lab" target="_blank" rel="noopener" class="contact-btn">GitHub</a>
-      <a href="https://dribbble.com/tbowes509" target="_blank" rel="noopener" class="contact-btn">Dribbble</a>
-    </div>
-    <form class="contact-form" action="https://formspree.io/f/xbdzzrjz" method="POST">
-      <div class="form-row"><label>Your Name</label><input type="text" name="name" placeholder="Jane Smith" required></div>
-      <div class="form-row"><label>Email</label><input type="email" name="email" placeholder="jane@example.com" required></div>
-      <div class="form-row"><label>Message</label><textarea name="message" rows="5" placeholder="Tell me about your project..." required></textarea></div>
-      <button type="submit" class="form-submit">Send Message</button>
-    </form>
-  </section>
-</div>
-
-<footer>
-  <span class="footer-logo">Tyler Bowes</span>
-  <div style="display:flex;gap:2rem;align-items:center;">
-    <a href="/cdn-cgi/l/email-protection#8efaece1f9ebfdbbbeb7cee9e3efe7e2a0ede1e3"><span class="__cf_email__" data-cfemail="88fceae7ffedfbbdb8b1c8efe5e9e1e4a6ebe7e5">[email&#160;protected]</span></a>
-    <a href="https://github.com/tylerb-lab" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://dribbble.com/tbowes509" target="_blank" rel="noopener">Dribbble</a>
   </div>
-  <span>© 2026</span>
-</footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
-/* ── TV VIDEO PLAYER ── */
-document.addEventListener("DOMContentLoaded", function() {
-  var kb = document.getElementById("knobPlay");
-  if (kb) kb.addEventListener("click", toggleTV);
-});
+  <div class="hero-text">
+    <h1 class="hero-name">Tyler Bowes</h1>
+    <p class="hero-tagline">Web Designer · <em>Developer</em> · Maker of things</p>
+  </div>
+</section>
 
-function toggleTV() {
-  const knob      = document.getElementById('knobPlay');
-  const indicator = document.getElementById('tvIndicator');
-  const video     = document.getElementById('tvVideo');
-  const canvas    = document.getElementById('noiseCanvas');
-  if (!knob || !video || !canvas) return;
-  if (knob.classList.contains('playing')) {
-    video.pause(); video.currentTime = 0;
-    video.style.display = 'none';
-    canvas.style.transition = 'opacity .4s';
-    canvas.style.opacity = '1';
-    knob.classList.remove('playing');
-    if (indicator) { indicator.style.background = ''; indicator.style.boxShadow = ''; }
-  } else {
-    knob.classList.add('playing');
-    if (indicator) { indicator.style.background = '#d03030'; indicator.style.boxShadow = '0 0 8px #d03030'; }
-    video.style.display = 'block';
-    video.style.filter = 'contrast(1.08) brightness(0.88) saturate(0.75) sepia(0.12)';
-    canvas.style.transition = 'opacity .4s';
-    canvas.style.opacity = '0';
-    var playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(function(err) {
-        console.log('Video error:', err);
-        canvas.style.opacity = '1';
-        video.style.display = 'none';
-        knob.classList.remove('playing');
-        if (indicator) { indicator.style.background = ''; indicator.style.boxShadow = ''; }
-      });
+<!-- KEEP REST OF YOUR PAGE EXACTLY SAME -->
+
+<!-- Cloudflare email script -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+<script>
+const video = document.getElementById('tvVideo');
+const canvas = document.getElementById('noiseCanvas');
+const ctx = canvas.getContext('2d');
+const knob = document.getElementById('knobPlay');
+const indicator = document.getElementById('tvIndicator');
+
+let audioCtx;
+
+/* ── CLICK SOUND ── */
+function clickSound(freq) {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.frequency.value = freq;
+  osc.type = "square";
+
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.05);
+}
+
+/* ── HUM ── */
+function startHum() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.frequency.value = 60;
+  gain.gain.value = 0.02;
+
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();
+
+  video._hum = osc;
+}
+
+function stopHum() {
+  if (video._hum) video._hum.stop();
+}
+
+/* ── CRT BOOT ── */
+function crtBoot() {
+  let i = 0;
+
+  const flicker = setInterval(() => {
+    canvas.style.opacity = i % 2 ? "0.2" : "1";
+    i++;
+
+    if (i > 6) {
+      clearInterval(flicker);
+      canvas.style.opacity = "0";
+      startVideo();
     }
+  }, 60);
+}
+
+/* ── VHS GLITCH ── */
+function glitch() {
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      const y = Math.random() * canvas.height;
+      const h = Math.random() * 20;
+
+      ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.3})`;
+      ctx.fillRect(0, y, canvas.width, h);
+    }, i * 30);
   }
 }
 
-</script><script>
-document.addEventListener('DOMContentLoaded', function() {
-  var knob = document.getElementById('knobPlay');
-  if (knob) knob.addEventListener('click', toggleTV);
-});
+/* ── PLAY VIDEO ── */
+function startVideo() {
+  video.style.display = "block";
+  video.currentTime = 0;
 
-window.addEventListener('scroll', () => {
-  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
-});
+  video.play().then(() => {
+    startHum();
+    glitch();
+  }).catch(() => {
+    canvas.style.opacity = "1";
+    video.style.display = "none";
+    knob.classList.remove("playing");
+  });
+}
 
-const canvas = document.getElementById('noiseCanvas');
-const ctx = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
-let frameCount = 0;
+/* ── TOGGLE ── */
+knob.addEventListener("click", () => {
 
-function drawNoise() {
-  frameCount++;
-  const imageData = ctx.createImageData(W, H);
-  const data = imageData.data;
-  for (let i = 0; i < data.length; i += 4) {
-    const idx = i >> 2;
-    const y = (idx / W) | 0;
-    let v = Math.random() * 255 | 0;
-    const band = (y + frameCount * 5) % H;
-    if (band < H * 0.05) { const t = 1 - band / (H * 0.05); v = Math.min(v + t * 200 | 0, 255); }
-    if (Math.random() < 0.002) v = 0;
-    const r = v > 100 ? Math.min(v * 1.05 | 0, 255) : v;
-    const g = v;
-    const b = v > 100 ? v * 0.75 | 0 : v;
-    data[i] = r; data[i+1] = g; data[i+2] = b; data[i+3] = 255;
+  if (knob.classList.contains("playing")) {
+    clickSound(120);
+
+    video.pause();
+    video.currentTime = 0;
+    video.style.display = "none";
+
+    stopHum();
+
+    canvas.style.opacity = "1";
+    knob.classList.remove("playing");
+
+    indicator.style.background = "";
+    indicator.style.boxShadow = "";
+
+  } else {
+    clickSound(220);
+
+    knob.classList.add("playing");
+
+    indicator.style.background = "#d03030";
+    indicator.style.boxShadow = "0 0 8px #d03030";
+
+    crtBoot();
   }
+
+});
+
+/* ── NOISE ── */
+function noise() {
+  const imageData = ctx.createImageData(canvas.width, canvas.height);
+  const data = imageData.data;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const v = Math.random() * 255;
+    data[i] = data[i+1] = data[i+2] = v;
+    data[i+3] = 255;
+  }
+
   ctx.putImageData(imageData, 0, 0);
-  if (Math.random() < 0.10) { const gy = Math.random() * H; const gh = Math.random() * 16 + 2; ctx.fillStyle = `rgba(255,245,200,${(Math.random() * 0.4 + 0.15).toFixed(2)})`; ctx.fillRect(0, gy, W, gh); }
-  if (Math.random() < 0.06) { const gy = Math.random() * H; ctx.fillStyle = `rgba(0,0,0,${(Math.random() * 0.55 + 0.2).toFixed(2)})`; ctx.fillRect(0, gy, W, Math.random() * 10 + 2); }
-  if (Math.random() < 0.08) { const sy = (Math.random() * H * 0.7 + H * 0.1) | 0; const sh = (Math.random() * 10 + 3) | 0; const shift = (Math.random() * 6 + 2) | 0; try { const sliceData = ctx.getImag
+  requestAnimationFrame(noise);
+}
+noise();
+
+/* ── NAV ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav')
+    .classList.toggle('scrolled', window.scrollY > 60);
+});
+</script>
+
+</body>
+</html>

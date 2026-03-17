@@ -56,6 +56,21 @@ nav.scrolled {
   background: linear-gradient(90deg, transparent, rgba(200,137,74,0.25), transparent);
 }
 
+#noiseCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2; /* ABOVE video */
+  pointer-events: none;
+}
+
+#tvVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
 /* ── 3D TV ── */
 .tv-wrapper { position: relative; perspective: 900px; margin-bottom: 2.5rem; }
 .tv-3d {
@@ -393,7 +408,8 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  video.muted = true;
+  video.muted = false;
+  video.volume = 1;
 
   knob.addEventListener("click", function () {
 

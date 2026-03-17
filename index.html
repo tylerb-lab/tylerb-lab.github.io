@@ -280,7 +280,7 @@ footer a:hover { color: var(--accent); }
             <div class="tv-indicator" id="tvIndicator"></div>
             <div class="knob knob-sm"></div>
             <div class="knob"></div>
-            <div class="knob knob-play" id="knobPlay" onclick="toggleTV()" title="Play"></div>
+            <div class="knob knob-play" id="knobPlay" title="Play"></div>
           </div>
         </div>
       </div>
@@ -381,6 +381,11 @@ footer a:hover { color: var(--accent); }
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
 /* ── TV VIDEO PLAYER ── */
+document.addEventListener("DOMContentLoaded", function() {
+  var kb = document.getElementById("knobPlay");
+  if (kb) kb.addEventListener("click", toggleTV);
+});
+
 function toggleTV() {
   const knob      = document.getElementById('knobPlay');
   const indicator = document.getElementById('tvIndicator');
@@ -415,6 +420,11 @@ function toggleTV() {
 }
 
 </script><script>
+document.addEventListener('DOMContentLoaded', function() {
+  var knob = document.getElementById('knobPlay');
+  if (knob) knob.addEventListener('click', toggleTV);
+});
+
 window.addEventListener('scroll', () => {
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
 });

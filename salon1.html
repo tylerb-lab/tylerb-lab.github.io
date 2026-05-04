@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MoreTime Laundry
+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#fdf8f4;--bg2:#f7f0e8;--ink:#1a1410;--rose:#c4806a;--rose2:#e8b090;--stone:#8a7a6a;--light:#e8ddd4;--serif:'Cormorant Garamond',serif;--sans:'Jost',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:22px 52px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+nav.s{background:rgba(253,248,244,.93);backdrop-filter:blur(16px);padding:14px 52px;border-bottom:1px solid var(--light)}
+.nlogo{font-family:var(--serif);font-size:22px;color:var(--ink);text-decoration:none;letter-spacing:.04em}
+.nlinks{display:flex;gap:32px;list-style:none}
+.nlinks a{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .2s}.nlinks a:hover{color:var(--ink)}
+.ncta{background:var(--ink);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:11px 26px;text-decoration:none;transition:all .2s}.ncta:hover{background:var(--rose)}
+/* hero */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.hero-l{background:var(--bg2);display:flex;flex-direction:column;justify-content:center;padding:140px 80px 80px 80px;position:relative}
+.hero-l::after{content:'';position:absolute;right:0;top:15%;bottom:15%;width:1px;background:var(--light)}
+.hero-eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--rose);margin-bottom:20px}
+.hero h1{font-family:var(--serif);font-size:clamp(52px,5.5vw,80px);line-height:1.0;letter-spacing:-.01em;color:var(--ink);margin-bottom:24px}
+.hero h1 em{font-style:italic;color:var(--rose)}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.8;max-width:360px;margin-bottom:44px}
+.hero-btns{display:flex;gap:12px}
+.btn-p{background:var(--ink);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:14px 32px;text-decoration:none;transition:all .2s}.btn-p:hover{background:var(--rose)}
+.btn-o{color:var(--ink);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:14px 24px;text-decoration:none;border-bottom:1px solid var(--ink);transition:all .2s}.btn-o:hover{color:var(--rose);border-color:var(--rose)}
+.hero-r{background:var(--light);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-img-placeholder{width:100%;height:100%;background:linear-gradient(160deg,#e8d8cc,#d4c0b0);display:flex;align-items:center;justify-content:center}
+.hero-img-placeholder svg{opacity:.2}
+.hero-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+/* sections */
+section{padding:100px 52px}
+.si{max-width:1100px;margin:0 auto}
+.eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);margin-bottom:14px}
+.sh{font-family:var(--serif);font-size:clamp(36px,4vw,54px);line-height:1.05;letter-spacing:-.01em;color:var(--ink);margin-bottom:16px}
+.sh em{font-style:italic}
+.sb{font-size:15px;color:var(--stone);line-height:1.75;max-width:480px}
+/* services */
+.services{background:var(--bg)}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--light);margin-top:60px;border:1px solid var(--light)}
+.svc-card{background:var(--bg);padding:40px 32px;transition:background .2s}.svc-card:hover{background:var(--bg2)}
+.svc-num{font-family:var(--serif);font-size:11px;color:var(--rose);letter-spacing:.1em;margin-bottom:16px}
+.svc-card h3{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:10px}
+.svc-card p{font-size:13px;color:var(--stone);line-height:1.7;margin-bottom:20px}
+.svc-from{font-size:11px;color:var(--stone);letter-spacing:.08em}
+.svc-price{font-family:var(--serif);font-size:26px;color:var(--rose)}
+/* team */
+.team{background:var(--bg2)}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:60px}
+.team-card{text-align:center}
+.team-img{width:100%;aspect-ratio:3/4;background:linear-gradient(160deg,#e8d0c4,#d0b8a8);border-radius:4px;margin-bottom:20px;display:flex;align-items:center;justify-content:center}
+.team-img svg{opacity:.15}
+.team-card h4{font-family:var(--serif);font-size:20px;color:var(--ink);margin-bottom:4px}
+.team-card p{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rose)}
+.team-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:4px;
+}
+/* booking */
+.booking{background:var(--ink)}
+.booking .eyebrow{color:var(--rose2)}
+.booking .sh{color:#fff}
+.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.booking-form{display:flex;flex-direction:column;gap:14px}
+.bf-group{display:flex;flex-direction:column;gap:6px}
+.bf-group label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.bf-group input,.bf-group select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:13px 16px;font-family:var(--sans);font-size:14px;color:#fff;outline:none;transition:border-color .2s}.bf-group input:focus,.bf-group select:focus{border-color:var(--rose)}
+.bf-group select option{background:var(--ink);color:#fff}
+.bf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bf-submit{background:var(--rose);color:#fff;font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:15px;border:none;cursor:pointer;transition:background .2s;margin-top:6px}.bf-submit:hover{background:var(--rose2)}
+/* footer */
+footer{background:var(--bg2);padding:48px 52px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;border-top:1px solid var(--light)}
+.flogo{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:10px}
+.ftagline{font-size:13px;color:var(--stone);line-height:1.65;max-width:220px}
+.fcol-h{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:14px}
+.flinks{list-style:none;display:flex;flex-direction:column;gap:9px}
+.flinks a{font-size:13px;color:var(--stone);text-decoration:none;transition:color .2s}.flinks a:hover{color:var(--ink)}
+.fcopy{grid-column:1/-1;border-top:1px solid var(--light);padding-top:20px;font-size:11px;color:var(--stone);letter-spacing:.04em}
+/* reveal */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+@media(max-width:900px){nav{padding:16px 24px}nav.s{padding:14px 24px}.hero{grid-template-columns:1fr}.hero-r{min-height:50vw}.hero-l{padding:100px 24px 60px}.hero-l::after{display:none}section{padding:70px 24px}.svc-grid{grid-template-columns:1fr}.team-grid{grid-template-columns:1fr 1fr}.booking-grid{grid-template-columns:1fr}.bf-row{grid-template-columns:1fr}footer{grid-template-columns:1fr;gap:28px;padding:40px 24px}}
+</style>
+</head>
+<body>
+<nav id="nav">
+  <a href="#" class="nlogo">MoreTime Ironing</a>
+  <ul class="nlinks"><li><a href="#services">Services</a></li><li><a href="#team">Team</a></li><li><a href="#booking">Book</a></li></ul>
+  <a href="#booking" class="ncta">Book Now</a>
+</nav>
+<section class="hero">
+  <div class="hero-l">
+    <p class="hero-eyebrow">Established 1997</p>
+    <h1>Where clothes<br>become <em>perfect.</em></h1>
+    <p class="hero-sub">Hawkesbury's most trusted ironing team to cater for your needs, we come to you!</p>
+    <div class="hero-btns"><a href="#booking" class="btn-p">Book us now!</a><a href="#services" class="btn-o">Our services</a></div>
+  </div>
+ <div class="hero-img-placeholder">
+  <img src="laundry.jpeg" alt="Laundry service" class="hero-img">
+</div>
+  </div>
+</section>
+<section class="services" id="services">
+  <div class="si">
+    <p class="eyebrow rv">What we do</p>
+    <h2 class="sh rv d1">Services tailored<br>to <em>you.</em></h2>
+    <div class="svc-grid">
+      <div class="svc-card rv d1"><p class="svc-num">01</p><h3>Washing</h3><p>We'll come to you, pick up your clothes and return them perfectly washed - removing the hassle from your life</p><p class="svc-from">From</p><p class="svc-price">$25 Per Load</p></div>
+      <div class="svc-card rv d2"><p class="svc-num">02</p><h3>Ironing</h3><p>Along with washing your clothes, we also provide professional ironing services to ensure they look their best.</p><p class="svc-from">From</p><p class="svc-price">$10 Per Load</p></div>
+      <div class="svc-card rv d3"><p class="svc-num">03</p><h3>Dry Cleaning</h3><p>Professional dry cleaning services to keep your clothes looking their best.</p><p class="svc-from">From</p><p class="svc-price">$120</p></div>
+    </div>
+  </div>
+</section>
+<section class="team" id="team">
+  <div class="si">
+    <p class="eyebrow rv">Customer Stories</p>
+    <h2 class="sh rv d1">Hear from our <em>clients.</em></h2>
+
+    <div class="team-grid">
+
+
+      <div class="team-card rv d1">
+        <div class="team-img">
+          <img src="1.jpeg" alt="Sophie Laurent">
+        </div>
+        <h4>Sophie Laurent</h4>
+        <p>"MoreTime did such a great job with my laundry! I love how convenient it is."</p>
+      </div>
+
+
+      <div class="team-card rv d2">
+        <div class="team-img">
+          <img src="2.jpeg" alt="Mia Chen">
+        </div>
+        <h4>Mia Chen</h4>
+        <p>"MoreTime does amazing work, theyre quick and efficient!"</p>
+      </div>
+
+      <div class="team-card rv d3">
+        <div class="team-img">
+          <img src="3.jpeg" alt="Jade Williams">
+        </div>
+        <h4>Jade Williams</h4>
+        <p>"10/10 Best service ever!"</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section class="booking" id="booking">
+  <div class="si">
+    <div class="booking-grid">
+      <div><p class="eyebrow rv">Bookings</p><h2 class="sh rv d1">Claim your free time<br><em>Back.</em></h2><p class="rv d2" style="font-size:15px;color:rgba(255,255,255,.5);line-height:1.75;max-width:360px;margin-top:20px">All new clients receive a complimentary consultation and 15% off their first visit.</p></div>
+      <div class="booking-form rv d2">
+        <div class="bf-row"><div class="bf-group"><label>First name</label><input type="text" placeholder="Jane"/></div><div class="bf-group"><label>Last name</label><input type="text" placeholder="Smith"/></div></div>
+        <div class="bf-group"><label>Email</label><input type="email" placeholder="jane@email.com"/></div>
+        <div class="bf-group"><label>Service</label><select><option>Select a service...</option><option>Washing</option><option>Ironing</option><option>Dry Cleaning</option></select></div>
+        <div class="bf-row"><div class="bf-group"><label>Preferred date</label><input type="date"/></div><div class="bf-group"><label>Preferred time</label><select><option>Morning (9–12)</option><option>Afternoon (12–5)</option><option>Evening (5–8)</option></select></div></div>
+        <button class="bf-submit" onclick="this.textContent='Request sent — we\'ll confirm shortly'">Request appointment</button>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div><div class="flogo">MoreTime Ironing</div><p class="ftagline">Professional Washing & ironing services at your doorstep.</p></div>
+  <div><p class="fcol-h">Services</p><ul class="flinks"><li><a href="#">Washing</a></li><li><a href="#">Ironing</a></li><li><a href="#">Dry Cleaning</a></li><div></div>
+  <div><p class="fcol-h">Visit</p><ul class="flinks"><li><a href="#">123 Example Street</a></li><li><a href="#">(02) 0000 0000</a></li><li><a href="#">hello@MORETIME.com.au</a></li><li><a href="#">Mon–Sat 9am–7pm</a></li></ul></div>
+  <div><p class="fcopy">© 2025 MORETIME IRONING. All rights reserved.</p></div>
+</footer>
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('s',scrollY>60));
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in')})},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

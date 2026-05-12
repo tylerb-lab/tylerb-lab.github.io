@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeverCool App — Quit. Track. Win.</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&display=swap');
+
+/* ===== RESET ===== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #0f0f1a;
+  --surface: #1a1a2e;
+  --surface2: #22223b;
+  --border: rgba(255,255,255,0.1);
+  --yellow: #FFE033;
+  --green: #3DDC97;
+  --coral: #FF6B6B;
+  --blue: #4ECDC4;
+  --purple: #C77DFF;
+  --orange: #FF9A3C;
+  --white: #FDFBF5;
+  --muted: rgba(255,255,255,0.45);
+  --ink: #1a1a2e;
+  --radius: 20px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== ONBOARDING ===== */
+#onboarding {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+  background: var(--bg);
+  position: relative; overflow: hidden;
+}
+.ob-card {
+  background: var(--surface);
+  border: 2px solid rgba(255,224,51,0.3);
+  border-radius: 28px;
+  padding: 2.5rem;
+  max-width: 440px; width: 100%;
+  box-shadow: 0 0 80px rgba(255,224,51,0.08);
+  position: relative; z-index: 1;
+}
+.ob-logo { font-weight:900; font-size:1.6rem; color:var(--yellow); margin-bottom:0.25rem; }
+.ob-logo span { color:var(--white); }
+.ob-step { display:none; }
+.ob-step.active { display:block; animation: fadeUp 0.4s ease; }
+.ob-heading { font-size:1.6rem; font-weight:900; line-height:1.2; margin:1rem 0 0.5rem; }
+.ob-sub { font-size:0.95rem; color:var(--muted); font-weight:700; line-height:1.6; margin-bottom:1.5rem; }
+
+label.field-label { display:block; font-size:0.8rem; font-weight:900; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem; margin-top:1rem; }
+input[type=number], input[type=date], input[type=time], select {
+  width:100%; background:var(--surface2); border:2px solid var(--border);
+  border-radius:12px; padding:0.8rem 1rem; color:var(--white);
+  font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700;
+  outline:none; transition:border-color 0.2s;
+}
+input[type=number]:focus, input[type=date]:focus, select:focus { border-color:var(--yellow); }
+input[type=number]::-webkit-inner-spin-button { opacity:1; }
+
+.ob-btn {
+  display:block; width:100%; margin-top:1.5rem;
+  background:var(--yellow); color:var(--ink);
+  border:none; border-radius:50px; padding:1rem;
+  font-family:'Nunito',sans-serif; font-size:1.05rem; font-weight:900;
+  cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 20px rgba(255,224,51,0.3);
+}
+.ob-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,224,51,0.4); }
+
+.ob-progress { display:flex; gap:6px; margin-bottom:1.5rem; }
+.ob-dot { height:5px; border-radius:5px; background:var(--border); flex:1; transition:background 0.3s; }
+.ob-dot.done { background:var(--yellow); }
+
+/* ===== APP SHELL ===== */
+#app { display:none; min-height:100vh; padding-bottom:90px; }
+#app.visible { display:block; }
+
+/* ===== TOP BAR ===== */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  display: flex; align-items:center; justify-content:space-between;
+  position: sticky; top:0; z-index:100;
+}
+.app-logo { font-weight:900; font-size:1.2rem; color:var(--yellow); }
+.app-logo span { color:var(--white); }
+.topbar-streak {
+  display:flex; align-items:center; gap:6px;
+  background:var(--surface2); border-radius:50px;
+  padding:6px 14px; border:1px solid var(--border);
+  font-weight:900; font-size:0.9rem;
+}
+.streak-fire { font-size:1.1rem; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding:0.5rem 0 max(0.5rem, env(safe-area-inset-bottom));
+}
+.nav-tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:0.4rem;
+  background:none; border:none; cursor:pointer; color:var(--muted);
+  font-family:'Nunito',sans-serif; font-size:0.68rem; font-weight:800;
+  transition:color 0.2s; text-transform:uppercase; letter-spacing:0.3px;
+}
+.nav-tab .tab-icon { font-size:1.35rem; line-height:1; }
+.nav-tab.active { color:var(--yellow); }
+
+/* ===== SCREENS ===== */
+.screen { display:none; padding:1.5rem; animation:fadeUp 0.35s ease; }
+.screen.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== DASHBOARD ===== */
+.hero-card {
+  background: linear-gradient(135deg, #1e1e3a 0%, #2a1a3e 100%);
+  border:2px solid rgba(255,224,51,0.2);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  margin-bottom:1.25rem;
+  position: relative; overflow: hidden;
+}
+.hero-card::before {
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,224,51,0.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.days-num {
+  font-size: 5rem; font-weight:900; line-height:1;
+  color:var(--yellow);
+  text-shadow: 0 0 40px rgba(255,224,51,0.4);
+}
+.days-label { font-size:0.9rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:0.25rem; }
+.hero-sub { font-family:'Caveat',cursive; font-size:1.3rem; color:var(--white); margin-top:0.75rem; opacity:0.9; }
+
+.quick-stats { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+.qs-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:1.25rem; text-align:center;
+}
+.qs-val { font-size:1.8rem; font-weight:900; line-height:1; }
+.qs-label { font-size:0.75rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.25rem; }
+
+.check-in-card {
+  background:var(--surface); border:2px solid var(--border);
+  border-radius:var(--radius); padding:1.5rem; margin-bottom:1.25rem;
+}
+.check-in-card h3 { font-size:1rem; margin-bottom:1rem; }
+.mood-row { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1rem; }
+.mood-btn {
+  background:var(--surface2); border:2px solid var(--border);
+  border-radius:12px; padding:0.6rem 0.9rem; cursor:pointer;
+  font-size:1.4rem; transition:all 0.15s; line-height:1;
+}
+.mood-btn:hover, .mood-btn.selected { border-color:var(--yellow); background:rgba(255,224,51,0.1); transform:scale(1.1); }
+.crave-btn {
+  width:100%; background:linear-gradient(135deg,var(--coral),#ff8e53);
+  border:none; border-radius:50px; padding:0.9rem;
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem;
+  color:white; cursor:pointer; box-shadow:0 4px 20px rgba(255,107,107,0.3);
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.crave-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,107,107,0.4); }
+
+/* ===== MILESTONES ===== */
+.milestone-list { display:flex; flex-direction:column; gap:0.75rem; }
+.milestone-item {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:1.25rem;
+  display:flex; align-items:center; gap:1rem;
+  transition: border-color 0.3s;
+}
+.milestone-item.unlocked { border-color:var(--green); background:rgba(61,220,151,0.07); }
+.milestone-item.locked { opacity:0.5; }
+.ms-icon { font-size:2rem; flex-shrink:0; width:52px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:14px; }
+.milestone-item.unlocked .ms-icon { background:rgba(61,220,151,0.15); }
+.milestone-item.locked .ms-icon { background:var(--surface2); }
+.ms-name { font-size:1rem; font-weight:900; margin-bottom:0.15rem; }
+.ms-desc { font-size:0.82rem; color:var(--muted); font-weight:700; line-height:1.4; }
+.ms-badge { margin-left:auto; font-size:0.72rem; font-weight:900; padding:4px 10px; border-radius:50px; white-space:nowrap; }
+.unlocked .ms-badge { background:rgba(61,220,151,0.2); color:var(--green); border:1px solid var(--green); }
+.locked .ms-badge { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
+
+/* ===== MONEY ===== */
+.money-hero {
+  background: linear-gradient(135deg,#1a2e1a,#1e3a22);
+  border:2px solid rgba(61,220,151,0.25); border-radius:var(--radius);
+  padding:2rem; text-align:center; margin-bottom:1.25rem;
+}
+.money-num { font-size:4rem; font-weight:900; color:var(--green); line-height:1; }
+.money-label { font-size:0.85rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:0.25rem; }
+.money-caveat { font-family:'Caveat',cursive; font-size:1.2rem; color:var(--white); margin-top:0.5rem; opacity:0.85; }
+
+.savings-breakdown { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:1.25rem; }
+.sb-row { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; border-bottom:1px solid var(--border); }
+.sb-row:last-child { border-bottom:none; }
+.sb-label { font-size:0.88rem; font-weight:800; color:var(--muted); }
+.sb-val { font-size:1rem; font-weight:900; color:var(--green); }
+
+.dream-section { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
+.dream-section h3 { margin-bottom:0.25rem; }
+.dream-section p { font-size:0.85rem; color:var(--muted); font-weight:700; margin-bottom:1rem; }
+.dream-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.dream-item {
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:14px; padding:1rem; text-align:center; cursor:pointer;
+  transition:all 0.15s;
+}
+.dream-item:hover { border-color:var(--yellow); }
+.dream-item.active { border-color:var(--yellow); background:rgba(255,224,51,0.08); }
+.dream-emoji { font-size:1.8rem; margin-bottom:0.4rem; }
+.dream-name { font-size:0.8rem; font-weight:900; }
+.dream-price { font-size:0.72rem; color:var(--muted); font-weight:700; }
+.dream-progress { margin-top:0.5rem; height:4px; background:var(--border); border-radius:4px; overflow:hidden; }
+.dream-progress-bar { height:100%; background:var(--yellow); border-radius:4px; transition:width 1s ease; }
+
+/* ===== JOURNAL ===== */
+.journal-form { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; }
+.journal-form h3 { margin-bottom:1rem; }
+.trigger-grid { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; }
+.trigger-chip {
+  background:var(--surface2); border:1.5px solid var(--border);
+  border-radius:50px; padding:0.4rem 0.9rem;
+  font-size:0.82rem; font-weight:800; cursor:pointer; transition:all 0.15s;
+}
+.trigger-chip.selected { border-color:var(--coral); background:rgba(255,107,107,0.12); color:var(--coral); }
+.intensity-row { display:flex; gap:0.5rem; margin-bottom:1rem; }
+.int-btn {
+  flex:1; background:var(--surface2); border:1.5px solid var(--border);
+  border-radius:10px; padding:0.6rem; text-align:center;
+  font-size:0.8rem; font-weight:900; cursor:pointer; transition:all 0.15s;
+}
+.int-btn.selected { border-color:var(--orange); background:rgba(255,154,60,0.12); color:var(--orange); }
+textarea {
+  width:100%; background:var(--surface2); border:2px solid var(--border);
+  border-radius:12px; padding:0.9rem; color:var(--white);
+  font-family:'Nunito',sans-serif; font-size:0.95rem; font-weight:700;
+  resize:none; height:90px; outline:none; transition:border-color 0.2s;
+}
+textarea:focus { border-color:var(--yellow); }
+textarea::placeholder { color:var(--muted); }
+.submit-btn {
+  width:100%; background:var(--coral); border:none; border-radius:50px;
+  padding:0.9rem; color:white;
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:1rem;
+  cursor:pointer; margin-top:0.75rem;
+  transition:transform 0.15s, box-shadow 0.15s;
+  box-shadow:0 4px 16px rgba(255,107,107,0.3);
+}
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,107,107,0.4); }
+
+.journal-entries { display:flex; flex-direction:column; gap:0.75rem; }
+.journal-entry {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:1.25rem;
+}
+.je-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; }
+.je-time { font-size:0.78rem; color:var(--muted); font-weight:800; }
+.je-intensity { font-size:0.72rem; font-weight:900; padding:3px 10px; border-radius:50px; }
+.je-triggers { display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.5rem; }
+.je-trigger-tag { font-size:0.72rem; font-weight:900; background:rgba(255,107,107,0.15); color:var(--coral); border-radius:50px; padding:2px 8px; }
+.je-note { font-size:0.87rem; color:var(--muted); font-weight:700; line-height:1.5; }
+
+/* ===== SECTION HEADERS ===== */
+.screen-header { margin-bottom:1.5rem; }
+.screen-header .section-tag { font-family:'Caveat',cursive; font-size:1.1rem; color:var(--purple); display:block; margin-bottom:0.1rem; }
+.screen-header h2 { font-size:1.6rem; font-weight:900; line-height:1.1; }
+.screen-header p { font-size:0.88rem; color:var(--muted); font-weight:700; margin-top:0.25rem; line-height:1.5; }
+
+/* ===== CRAVING MODAL ===== */
+.modal-overlay {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,0.7); backdrop-filter:blur(6px);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:1rem;
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal-sheet {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:28px 28px 0 0; padding:2rem;
+  width:100%; max-width:480px;
+  transform:translateY(100%); transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-overlay.open .modal-sheet { transform:translateY(0); }
+.modal-handle { width:40px; height:4px; background:var(--border); border-radius:4px; margin:0 auto 1.5rem; }
+.modal-title { font-size:1.4rem; font-weight:900; margin-bottom:0.5rem; }
+.modal-sub { font-size:0.9rem; color:var(--muted); font-weight:700; margin-bottom:1.5rem; line-height:1.5; }
+.distraction-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem; }
+.distraction-item {
+  background:var(--surface2); border:1.5px solid var(--border);
+  border-radius:16px; padding:1.1rem; text-align:center; cursor:pointer;
+  transition:all 0.15s;
+}
+.distraction-item:hover { border-color:var(--blue); background:rgba(78,205,196,0.08); }
+.distraction-item .d-icon { font-size:1.8rem; margin-bottom:0.35rem; }
+.distraction-item .d-label { font-size:0.8rem; font-weight:900; }
+.timer-display { text-align:center; margin:1rem 0; }
+.timer-num { font-size:3rem; font-weight:900; color:var(--yellow); line-height:1; }
+.timer-label { font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+.close-modal-btn {
+  width:100%; background:var(--surface2); border:1px solid var(--border);
+  border-radius:50px; padding:0.85rem; color:var(--muted);
+  font-family:'Nunito',sans-serif; font-weight:900; font-size:0.95rem;
+  cursor:pointer; transition:all 0.15s;
+}
+.close-modal-btn:hover { color:var(--white); border-color:rgba(255,255,255,0.3); }
+
+/* ===== TOAST ===== */
+.toast {
+  position:fixed; top:80px; left:50%; transform:translateX(-50%) translateY(-20px);
+  background:var(--green); color:var(--ink);
+  font-weight:900; font-size:0.9rem;
+  padding:0.7rem 1.5rem; border-radius:50px;
+  z-index:300; opacity:0; transition:all 0.3s;
+  white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ===== BREATHING ANIMATION ===== */
+@keyframes breatheIn { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+.breathe-circle {
+  width:120px; height:120px; border-radius:50%;
+  background:radial-gradient(circle,rgba(78,205,196,0.4),rgba(78,205,196,0.1));
+  border:3px solid var(--blue);
+  margin:0 auto 1rem;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.8rem; font-weight:900; color:var(--blue);
+  text-transform:uppercase; letter-spacing:1px;
+  cursor:pointer; transition:all 0.15s;
+}
+.breathe-circle.breathing { animation:breatheIn 4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- ===== ONBOARDING ===== -->
+<div id="onboarding">
+  <!-- bg doodles -->
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.07" viewBox="0 0 400 800" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="350" cy="100" r="80" fill="#FFE033"/>
+    <circle cx="50" cy="600" r="100" fill="#3DDC97"/>
+    <circle cx="380" cy="750" r="60" fill="#C77DFF"/>
+  </svg>
+
+  <div class="ob-card">
+    <div class="ob-logo">never<span>cool</span> <span style="font-size:0.9rem;color:var(--muted);font-weight:700">app</span></div>
+
+    <div class="ob-progress">
+      <div class="ob-dot" id="dot-0"></div>
+      <div class="ob-dot" id="dot-1"></div>
+      <div class="ob-dot" id="dot-2"></div>
+      <div class="ob-dot" id="dot-3"></div>
+    </div>
+
+    <!-- Step 0: Welcome -->
+    <div class="ob-step active" id="ob-0">
+      <div style="font-size:3.5rem;margin:0.5rem 0">🚭</div>
+      <h2 class="ob-heading">Ready to quit for good?</h2>
+      <p class="ob-sub">NeverCool tracks your streak, saves you money, rewards your milestones, and helps you ride out cravings. No judgment. Just data and support.</p>
+      <button class="ob-btn" onclick="obNext(1)">let's go →</button>
+    </div>
+
+    <!-- Step 1: Quit date -->
+    <div class="ob-step" id="ob-1">
+      <div style="font-size:3rem;margin:0.5rem 0">📅</div>
+      <h2 class="ob-heading">When did you (or will you) quit?</h2>
+      <p class="ob-sub">Set your quit date. If you're quitting today, pick today! If you already quit, pick that date.</p>
+      <label class="field-label">Quit Date</label>
+      <input type="date" id="quit-date">
+      <label class="field-label">Quit Time</label>
+      <input type="time" id="quit-time" value="08:00">
+      <button class="ob-btn" onclick="obNext(2)">next →</button>
+    </div>
+
+    <!-- Step 2: Smoking habits -->
+    <div class="ob-step" id="ob-2">
+      <div style="font-size:3rem;margin:0.5rem 0">🚬</div>
+      <h2 class="ob-heading">How much did you smoke?</h2>
+      <p class="ob-sub">We use this to calculate money saved and health improvements. Be honest — no one's judging.</p>
+      <label class="field-label">Cigarettes per day</label>
+      <input type="number" id="cigs-per-day" value="10" min="1" max="80">
+      <label class="field-label">Cost per pack (AUD, 20 cigarettes)</label>
+      <input type="number" id="pack-cost" value="35" min="5" max="100" step="0.50">
+      <button class="ob-btn" onclick="obNext(3)">next →</button>
+    </div>
+
+    <!-- Step 3: Name -->
+    <div class="ob-step" id="ob-3">
+      <div style="font-size:3rem;margin:0.5rem 0">✨</div>
+      <h2 class="ob-heading">Last thing — what's your name?</h2>
+      <p class="ob-sub">We'll use it to cheer you on. You've got this.</p>
+      <label class="field-label">Your name</label>
+      <input type="text" id="user-name" placeholder="e.g. Alex" style="background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:0.8rem 1rem;color:var(--white);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;outline:none;width:100%;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--yellow)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      <button class="ob-btn" onclick="finishOnboarding()" style="background:linear-gradient(135deg,var(--yellow),var(--orange));margin-top:1.5rem">
+        start my journey 🚀
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <span class="app-logo">never<span>cool</span></span>
+    <div class="topbar-streak">
+      <span class="streak-fire">🔥</span>
+      <span id="topbar-streak-num">0</span>
+      <span style="color:var(--muted);font-size:0.8rem">days</span>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="screen active" id="screen-dash">
+    <div class="hero-card">
+      <div class="days-num" id="dash-days">0</div>
+      <div class="days-label">days smoke-free</div>
+      <div class="hero-sub" id="dash-message">You're doing amazing ✦</div>
+      <div style="margin-top:1rem;font-size:0.78rem;font-weight:800;color:rgba(255,255,255,0.4)" id="dash-exact"></div>
+    </div>
+
+    <div class="quick-stats">
+      <div class="qs-card">
+        <div class="qs-val" style="color:var(--green)" id="qs-money">$0</div>
+        <div class="qs-label">saved</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-val" style="color:var(--coral)" id="qs-cigs">0</div>
+        <div class="qs-label">cigs not smoked</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-val" style="color:var(--blue)" id="qs-life">0h</div>
+        <div class="qs-label">life regained</div>
+      </div>
+      <div class="qs-card">
+        <div class="qs-val" style="color:var(--purple)" id="qs-streak">🔥0</div>
+        <div class="qs-label">day streak</div>
+      </div>
+    </div>
+
+    <!-- Daily check-in -->
+    <div class="check-in-card">
+      <h3>☀️ Today's check-in</h3>
+      <p style="font-size:0.83rem;color:var(--muted);font-weight:700;margin-bottom:0.75rem">How are you feeling right now?</p>
+      <div class="mood-row" id="mood-row">
+        <button class="mood-btn" onclick="selectMood(this,'😄')">😄</button>
+        <button class="mood-btn" onclick="selectMood(this,'😊')">😊</button>
+        <button class="mood-btn" onclick="selectMood(this,'😐')">😐</button>
+        <button class="mood-btn" onclick="selectMood(this,'😤')">😤</button>
+        <button class="mood-btn" onclick="selectMood(this,'😣')">😣</button>
+        <button class="mood-btn" onclick="selectMood(this,'🤢')">🤢</button>
+      </div>
+      <button class="crave-btn" onclick="openCravingModal()">🆘 I'm having a craving — help!</button>
+    </div>
+
+    <!-- Next milestone preview -->
+    <div id="next-milestone-card" style="background:var(--surface);border:1px solid rgba(255,224,51,0.2);border-radius:var(--radius);padding:1.25rem">
+      <p style="font-size:0.75rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">↳ next milestone</p>
+      <div id="next-ms-content"></div>
+    </div>
+  </div>
+
+  <!-- Milestones screen -->
+  <div class="screen" id="screen-milestones">
+    <div class="screen-header">
+      <span class="section-tag">↳ achievements</span>
+      <h2>Your milestones</h2>
+      <p>Unlock badges as your smoke-free journey continues. Each one marks a real health improvement.</p>
+    </div>
+    <div class="milestone-list" id="milestone-list"></div>
+  </div>
+
+  <!-- Money screen -->
+  <div class="screen" id="screen-money">
+    <div class="screen-header">
+      <span class="section-tag">↳ your savings</span>
+      <h2>Money saved</h2>
+      <p>Every cigarette you didn't smoke is money back in your pocket.</p>
+    </div>
+
+    <div class="money-hero">
+      <div class="money-num" id="money-big">$0.00</div>
+      <div class="money-label">total saved since quitting</div>
+      <div class="money-caveat" id="money-caveat">keep going!</div>
+    </div>
+
+    <div class="savings-breakdown">
+      <div class="sb-row"><span class="sb-label">Today</span><span class="sb-val" id="sb-today">$0.00</span></div>
+      <div class="sb-row"><span class="sb-label">This week</span><span class="sb-val" id="sb-week">$0.00</span></div>
+      <div class="sb-row"><span class="sb-label">This month</span><span class="sb-val" id="sb-month">$0.00</span></div>
+      <div class="sb-row"><span class="sb-label">Projected (1 year)</span><span class="sb-val" id="sb-year">$0.00</span></div>
+      <div class="sb-row"><span class="sb-label">Cigarettes not smoked</span><span class="sb-val" id="sb-cigs" style="color:var(--coral)">0</span></div>
+    </div>
+
+    <div class="dream-section">
+      <h3>What could you buy instead?</h3>
+      <p>Pick a dream purchase and watch your savings fill it up.</p>
+      <div class="dream-grid" id="dream-grid"></div>
+    </div>
+  </div>
+
+  <!-- Journal screen -->
+  <div class="screen" id="screen-journal">
+    <div class="screen-header">
+      <span class="section-tag">↳ craving log</span>
+      <h2>Craving Journal</h2>
+      <p>Track your triggers. Cravings peak at 3–5 minutes then pass. Log them to spot patterns.</p>
+    </div>
+
+    <div class="journal-form">
+      <h3>Log a craving</h3>
+      <p style="font-size:0.83rem;color:var(--muted);font-weight:700;margin-bottom:0.75rem">What triggered it?</p>
+      <div class="trigger-grid" id="trigger-chips"></div>
+      <p style="font-size:0.8rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:0.5px;margin:0.75rem 0 0.4rem">Intensity</p>
+      <div class="intensity-row" id="intensity-btns"></div>
+      <textarea placeholder="Any notes? (optional)" id="journal-note"></textarea>
+      <button class="submit-btn" onclick="logCraving()">log craving</button>
+    </div>
+
+    <div>
+      <p style="font-size:0.8rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem">recent entries</p>
+      <div class="journal-entries" id="journal-entries">
+        <p style="font-size:0.87rem;color:var(--muted);font-weight:700;text-align:center;padding:2rem">No cravings logged yet. You're crushing it! 🎉</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Craving Modal -->
+<div class="modal-overlay" id="craving-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🆘 Craving mode</div>
+    <div class="modal-sub">Cravings peak at 3–5 minutes then fade. You just need to ride it out. Try one of these:</div>
+
+    <div class="breathe-circle" id="breathe-btn" onclick="startBreathing()">
+      <span id="breathe-label">Tap to<br>breathe</span>
+    </div>
+    <div class="timer-display" id="timer-display" style="display:none">
+      <div class="timer-num" id="timer-num">5:00</div>
+      <div class="timer-label">ride it out</div>
+    </div>
+
+    <div class="distraction-grid">
+      <div class="distraction-item" onclick="showTip('Walk outside for 5 minutes. Fresh air and movement kill cravings faster than anything.')"><div class="d-icon">🚶</div><div class="d-label">Go for a walk</div></div>
+      <div class="distraction-item" onclick="showTip('Drink a big glass of cold water slowly. Sipping gives your hands and mouth something to do.')"><div class="d-icon">💧</div><div class="d-label">Drink water</div></div>
+      <div class="distraction-item" onclick="showTip('Text someone right now — even just \"hey\". Distraction breaks the craving loop.')"><div class="d-icon">📱</div><div class="d-label">Text someone</div></div>
+      <div class="distraction-item" onclick="showTip('Do 10 push-ups or jumping jacks. It releases endorphins and the craving will pass.')"><div class="d-icon">💪</div><div class="d-label">Quick exercise</div></div>
+    </div>
+
+    <div id="tip-box" style="display:none;background:rgba(78,205,196,0.12);border:1px solid var(--blue);border-radius:14px;padding:1rem;margin-bottom:1rem;font-size:0.9rem;font-weight:700;color:var(--blue);line-height:1.5"></div>
+
+    <button class="close-modal-btn" onclick="closeCravingModal()">I made it through 💪</button>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-tab active" id="tab-dash" onclick="switchScreen('dash')">
+    <span class="tab-icon">🏠</span>Dashboard
+  </button>
+  <button class="nav-tab" id="tab-milestones" onclick="switchScreen('milestones')">
+    <span class="tab-icon">🏆</span>Milestones
+  </button>
+  <button class="nav-tab" id="tab-money" onclick="switchScreen('money')">
+    <span class="tab-icon">💰</span>Money
+  </button>
+  <button class="nav-tab" id="tab-journal" onclick="switchScreen('journal')">
+    <span class="tab-icon">📓</span>Journal
+  </button>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let state = {
+  quitDate: null,   // Date object
+  cigsPerDay: 10,
+  packCost: 35,     // AUD per 20 cigs
+  name: '',
+  journal: [],
+  selectedMood: null,
+  selectedDream: null,
+  selectedTriggers: [],
+  selectedIntensity: null,
+};
+
+const MILESTONES = [
+  { id:'1h',   hours:1/24,    icon:'⚡', name:'1 Hour',        desc:'Blood pressure and heart rate drop to normal. Nicotine starts leaving your blood.', color:'#FFE033' },
+  { id:'8h',   hours:8/24,    icon:'🌿', name:'8 Hours',       desc:'Carbon monoxide levels in your blood drop to normal. Oxygen levels increase.', color:'#3DDC97' },
+  { id:'1d',   hours:1,       icon:'🌟', name:'24 Hours',      desc:'Your risk of a heart attack starts to fall. Carbon monoxide fully cleared.', color:'#FF9A3C' },
+  { id:'2d',   hours:2,       icon:'👃', name:'48 Hours',      desc:'Nerve endings start regrowing. Taste and smell are returning!', color:'#4ECDC4' },
+  { id:'1w',   hours:7,       icon:'🫁', name:'1 Week',        desc:'Breathing becomes noticeably easier. Bronchial tubes are starting to relax.', color:'#C77DFF' },
+  { id:'2w',   hours:14,      icon:'🏃', name:'2 Weeks',       desc:'Circulation has improved significantly. Exercise is getting easier.', color:'#FF6B6B' },
+  { id:'1m',   hours:30,      icon:'🛡️', name:'1 Month',       desc:'Your lungs are significantly cleaner. Fewer infections, better sleep.', color:'#FFE033' },
+  { id:'3m',   hours:90,      icon:'❤️', name:'3 Months',      desc:'Coughing and shortness of breath massively reduced. Risk of miscarriage drops.', color:'#FF6B6B' },
+  { id:'6m',   hours:180,     icon:'🦋', name:'6 Months',      desc:'Cravings are rare now. Lung function continues to improve month by month.', color:'#3DDC97' },
+  { id:'1y',   hours:365,     icon:'🎉', name:'1 Year',        desc:'Heart disease risk is HALF that of a smoker. Your body has transformed.', color:'#FFE033' },
+  { id:'5y',   hours:365*5,   icon:'🏆', name:'5 Years',       desc:'Stroke risk equals a non-smoker\'s. Your arteries have significantly recovered.', color:'#C77DFF' },
+  { id:'10y',  hours:365*10,  icon:'👑', name:'10 Years',      desc:'Lung cancer risk is half that of a smoker. Pancreatic cancer risk normalises.', color:'#FF9A3C' },
+  { id:'15y',  hours:365*15,  icon:'✨', name:'15 Years',      desc:'Risk of coronary heart disease equals that of a non-smoker. You did it.', color:'#4ECDC4' },
+];
+
+const DREAMS = [
+  { icon:'✈️', name:'Weekend trip', price:800 },
+  { icon:'👟', name:'New kicks', price:280 },
+  { icon:'🎮', name:'PS5 game', price:100 },
+  { icon:'💻', name:'New laptop', price:1500 },
+  { icon:'🎵', name:'AirPods', price:350 },
+  { icon:'🍣', name:'Fancy dinner', price:120 },
+  { icon:'📷', name:'Camera', price:900 },
+  { icon:'🏋️', name:'Gym year pass', price:800 },
+];
+
+const TRIGGERS = ['Stress','After eating','Boredom','Coffee','Alcohol','Social situation','Driving','Anxiety','Morning routine','Work break'];
+const INTENSITIES = [
+  { label:'Mild 😌', val:'mild', color:'#3DDC97' },
+  { label:'Moderate 😤', val:'moderate', color:'#FF9A3C' },
+  { label:'Intense 🔥', val:'intense', color:'#FF6B6B' },
+];
+
+// ===== ONBOARDING =====
+let currentStep = 0;
+function obNext(step) {
+  document.getElementById(`ob-${currentStep}`).classList.remove('active');
+  currentStep = step;
+  document.getElementById(`ob-${step}`).classList.add('active');
+  for (let i=0; i<4; i++) {
+    document.getElementById(`dot-${i}`).classList.toggle('done', i < step);
+  }
+}
+
+function finishOnboarding() {
+  const qd = document.getElementById('quit-date').value;
+  const qt = document.getElementById('quit-time').value || '08:00';
+  const name = document.getElementById('user-name').value.trim() || 'Friend';
+  const cpd = parseInt(document.getElementById('cigs-per-day').value) || 10;
+  const pc = parseFloat(document.getElementById('pack-cost').value) || 35;
+
+  const dateStr = qd || new Date().toISOString().split('T')[0];
+  state.quitDate = new Date(`${dateStr}T${qt}`);
+  state.cigsPerDay = cpd;
+  state.packCost = pc;
+  state.name = name;
+
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  initApp();
+}
+
+// ===== APP INIT =====
+function initApp() {
+  buildMilestones();
+  buildDreams();
+  buildJournalForm();
+  updateAll();
+  setInterval(updateAll, 60000); // update every minute
+}
+
+function updateAll() {
+  const now = new Date();
+  const diffMs = Math.max(0, now - state.quitDate);
+  const diffDays = diffMs / (1000*60*60*24);
+  const diffHours = diffMs / (1000*60*60);
+  const diffMins = diffMs / (1000*60);
+
+  const cigsPerMin = state.cigsPerDay / (24*60);
+  const costPerCig = state.packCost / 20;
+  const cigsNotSmoked = Math.floor(cigsPerMin * diffMins);
+  const moneySaved = cigsNotSmoked * costPerCig;
+  const lifeRegainedMins = cigsNotSmoked * 11; // 11 mins per cig
+  const lifeRegainedHours = lifeRegainedMins / 60;
+
+  // Dashboard
+  const days = Math.floor(diffDays);
+  document.getElementById('dash-days').textContent = days;
+  document.getElementById('topbar-streak-num').textContent = days;
+  document.getElementById('qs-streak').textContent = `🔥${days}`;
+
+  const msgs = [
+    `You're doing amazing, ${state.name}! ✦`,
+    `${state.name}, you're unstoppable 🔥`,
+    `Keep going, ${state.name}! Every minute counts ⚡`,
+    `${state.name}, your future self thanks you 💛`,
+  ];
+  document.getElementById('dash-message').textContent = msgs[days % msgs.length];
+
+  const hours = Math.floor(diffHours % 24);
+  const mins = Math.floor(diffMins % 60);
+  document.getElementById('dash-exact').textContent =
+    diffDays < 1 ? `${hours}h ${mins}m smoke-free` : `${days} days, ${hours}h, ${mins}m smoke-free`;
+
+  document.getElementById('qs-money').textContent = `$${Math.floor(moneySaved)}`;
+  document.getElementById('qs-cigs').textContent = cigsNotSmoked.toLocaleString();
+
+  if (lifeRegainedHours < 24) {
+    document.getElementById('qs-life').textContent = `${Math.floor(lifeRegainedHours)}h`;
+  } else {
+    document.getElementById('qs-life').textContent = `${Math.floor(lifeRegainedHours/24)}d`;
+  }
+
+  // Money screen
+  const dailySaving = state.cigsPerDay * costPerCig;
+  document.getElementById('money-big').textContent = `$${moneySaved.toFixed(2)}`;
+  document.getElementById('sb-today').textContent = `$${Math.min(moneySaved, dailySaving).toFixed(2)}`;
+  document.getElementById('sb-week').textContent = `$${Math.min(moneySaved, dailySaving*7).toFixed(2)}`;
+  document.getElementById('sb-month').textContent = `$${Math.min(moneySaved, dailySaving*30).toFixed(2)}`;
+  document.getElementById('sb-year').textContent = `$${(dailySaving*365).toFixed(2)}`;
+  document.getElementById('sb-cigs').textContent = cigsNotSmoked.toLocaleString();
+
+  const caveats = [
+    'That\'s real money back in your pocket.',
+    `${state.name}, you're rich in better choices 💚`,
+    'Imagine what you could do with this.',
+    'The industry lost. You won.',
+  ];
+  document.getElementById('money-caveat').textContent = caveats[days % caveats.length];
+
+  updateDreamProgress(moneySaved);
+
+  // Milestones
+  updateMilestones(diffDays);
+
+  // Next milestone
+  updateNextMilestone(diffDays);
+}
+
+// ===== MILESTONES =====
+function buildMilestones() {
+  const list = document.getElementById('milestone-list');
+  list.innerHTML = MILESTONES.map(m => `
+    <div class="milestone-item locked" id="ms-${m.id}">
+      <div class="ms-icon">${m.icon}</div>
+      <div style="flex:1">
+        <div class="ms-name">${m.name} smoke-free</div>
+        <div class="ms-desc">${m.desc}</div>
+      </div>
+      <span class="ms-badge" id="ms-badge-${m.id}">locked</span>
+    </div>
+  `).join('');
+}
+
+function updateMilestones(diffDays) {
+  MILESTONES.forEach(m => {
+    const el = document.getElementById(`ms-${m.id}`);
+    const badge = document.getElementById(`ms-badge-${m.id}`);
+    const unlocked = diffDays >= m.hours;
+    el.classList.toggle('unlocked', unlocked);
+    el.classList.toggle('locked', !unlocked);
+    badge.textContent = unlocked ? '✅ unlocked!' : `in ${m.hours <= diffDays ? '0' : formatTimeLeft(m.hours - diffDays)}`;
+  });
+}
+
+function updateNextMilestone(diffDays) {
+  const next = MILESTONES.find(m => diffDays < m.hours);
+  const el = document.getElementById('next-ms-content');
+  if (!next) {
+    el.innerHTML = `<p style="font-weight:900;color:var(--yellow)">🏆 You've unlocked all milestones! Absolute legend.</p>`;
+    return;
+  }
+  const pct = Math.min(100, (diffDays / next.hours) * 100);
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+      <span style="font-size:1.8rem">${next.icon}</span>
+      <div><div style="font-weight:900;font-size:1rem">${next.name}</div><div style="font-size:0.82rem;color:var(--muted);font-weight:700">${next.desc}</div></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:50px;height:8px;overflow:hidden">
+      <div style="height:100%;border-radius:50px;background:var(--yellow);width:${pct}%;transition:width 1s ease"></div>
+    </div>
+    <div style="font-size:0.78rem;color:var(--muted);font-weight:800;margin-top:0.4rem">${pct.toFixed(0)}% there · ${formatTimeLeft(next.hours - diffDays)} to go</div>
+  `;
+}
+
+function formatTimeLeft(days) {
+  if (days < 1/24) return `${Math.ceil(days*24*60)} mins`;
+  if (days < 1) return `${Math.ceil(days*24)} hours`;
+  if (days < 7) return `${Math.ceil(days)} days`;
+  if (days < 30) return `${Math.ceil(days/7)} weeks`;
+  return `${Math.ceil(days/30)} months`;
+}
+
+// ===== DREAMS =====
+function buildDreams() {
+  const grid = document.getElementById('dream-grid');
+  grid.innerHTML = DREAMS.map((d,i) => `
+    <div class="dream-item" id="dream-${i}" onclick="selectDream(${i})">
+      <div class="dream-emoji">${d.icon}</div>
+      <div class="dream-name">${d.name}</div>
+      <div class="dream-price">$${d.price}</div>
+      <div class="dream-progress"><div class="dream-progress-bar" id="dream-bar-${i}" style="width:0%"></div></div>
+    </div>
+  `).join('');
+}
+
+function selectDream(i) {
+  state.selectedDream = i;
+  document.querySelectorAll('.dream-item').forEach((el,idx) => el.classList.toggle('active', idx===i));
+}
+
+function updateDreamProgress(moneySaved) {
+  DREAMS.forEach((d,i) => {
+    const pct = Math.min(100, (moneySaved / d.price) * 100);
+    const bar = document.getElementById(`dream-bar-${i}`);
+    if (bar) bar.style.width = pct + '%';
+  });
+}
+
+// ===== JOURNAL =====
+function buildJournalForm() {
+  const chips = document.getElementById('trigger-chips');
+  chips.innerHTML = TRIGGERS.map(t => `<button class="trigger-chip" onclick="toggleTrigger(this,'${t}')">${t}</button>`).join('');
+
+  const intBtns = document.getElementById('intensity-btns');
+  intBtns.innerHTML = INTENSITIES.map(i => `<button class="int-btn" onclick="selectIntensity(this,'${i.val}')" style="--ic:${i.color}">${i.label}</button>`).join('');
+}
+
+function toggleTrigger(el, val) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    state.selectedTriggers.push(val);
+  } else {
+    state.selectedTriggers = state.selectedTriggers.filter(t => t !== val);
+  }
+}
+
+function selectIntensity(el, val) {
+  document.querySelectorAll('.int-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedIntensity = val;
+}
+
+function logCraving() {
+  if (!state.selectedIntensity) { showToast('Pick an intensity level first!'); return; }
+  const entry = {
+    time: new Date(),
+    triggers: [...state.selectedTriggers],
+    intensity: state.selectedIntensity,
+    note: document.getElementById('journal-note').value.trim(),
+  };
+  state.journal.unshift(entry);
+
+  // Reset form
+  document.querySelectorAll('.trigger-chip').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.int-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('journal-note').value = '';
+  state.selectedTriggers = [];
+  state.selectedIntensity = null;
+
+  renderJournalEntries();
+  showToast('Craving logged! 💪 You rode it out.');
+}
+
+function renderJournalEntries() {
+  const container = document.getElementById('journal-entries');
+  if (state.journal.length === 0) {
+    container.innerHTML = '<p style="font-size:0.87rem;color:var(--muted);font-weight:700;text-align:center;padding:2rem">No cravings logged yet. You\'re crushing it! 🎉</p>';
+    return;
+  }
+  const intensityColors = { mild:'#3DDC97', moderate:'#FF9A3C', intense:'#FF6B6B' };
+  container.innerHTML = state.journal.map(e => {
+    const d = new Date(e.time);
+    const timeStr = d.toLocaleDateString('en-AU', {weekday:'short', day:'numeric', month:'short'}) + ' · ' + d.toLocaleTimeString('en-AU', {hour:'2-digit', minute:'2-digit'});
+    return `
+      <div class="journal-entry">
+        <div class="je-header">
+          <span class="je-time">${timeStr}</span>
+          <span class="je-intensity" style="background:${intensityColors[e.intensity]}22;color:${intensityColors[e.intensity]};border:1px solid ${intensityColors[e.intensity]}">${e.intensity}</span>
+        </div>
+        ${e.triggers.length ? `<div class="je-triggers">${e.triggers.map(t=>`<span class="je-trigger-tag">${t}</span>`).join('')}</div>` : ''}
+        ${e.note ? `<p class="je-note">"${e.note}"</p>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== MOOD =====
+function selectMood(el, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedMood = mood;
+  showToast(`Mood logged: ${mood}`);
+}
+
+// ===== CRAVING MODAL =====
+let cravingTimer = null;
+function openCravingModal() {
+  document.getElementById('craving-modal').classList.add('open');
+  document.getElementById('tip-box').style.display = 'none';
+  document.getElementById('timer-display').style.display = 'none';
+  document.getElementById('breathe-btn').classList.remove('breathing');
+  document.getElementById('breathe-label').innerHTML = 'Tap to<br>breathe';
+  if (cravingTimer) clearInterval(cravingTimer);
+}
+
+function closeCravingModal() {
+  document.getElementById('craving-modal').classList.remove('open');
+  if (cravingTimer) clearInterval(cravingTimer);
+}
+
+function startBreathing() {
+  const circle = document.getElementById('breathe-btn');
+  const label = document.getElementById('breathe-label');
+  const timerDisplay = document.getElementById('timer-display');
+  const timerNum = document.getElementById('timer-num');
+
+  circle.classList.add('breathing');
+  timerDisplay.style.display = 'block';
+
+  let secs = 300; // 5 minutes
+  label.innerHTML = 'Breathe<br>with me';
+  timerNum.textContent = '5:00';
+
+  if (cravingTimer) clearInterval(cravingTimer);
+  cravingTimer = setInterval(() => {
+    secs--;
+    const m = Math.floor(secs/60);
+    const s = secs % 60;
+    timerNum.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if (secs <= 0) {
+      clearInterval(cravingTimer);
+      circle.classList.remove('breathing');
+      label.innerHTML = '✅ Done!';
+      timerNum.textContent = '0:00';
+      showToast('You rode it out! Craving gone 🎉');
+    }
+  }, 1000);
+}
+
+function showTip(text) {
+  const box = document.getElementById('tip-box');
+  box.textContent = text;
+  box.style.display = 'block';
+}
+
+// ===== NAV =====
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== DEFAULT QUIT DATE (today) =====
+document.getElementById('quit-date').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
